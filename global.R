@@ -18,7 +18,7 @@ data <- read_tsv(
 
 data <- data |>
   mutate(`Valor Índice de inclusión digital` = coalesce(`Valor Índice de inclusión digital`, runif(nrow(data)))) |>
-  dplyr::sample_n(20) |>
+  # dplyr::sample_n(20) |>
   arrange(`Código Comuna`)
 
 data
