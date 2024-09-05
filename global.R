@@ -3,10 +3,14 @@ library(shiny)
 library(bslib)
 library(readr)
 library(dplyr)
+library(purrr)
+library(stringr)
+
+source("R/helpers.R")
 
 # variables ---------------------------------------------------------------
 app_theme <-  bs_theme(
-  bootswatch = "simplex"
+  # bootswatch = "simplex"
 )
 
 # data --------------------------------------------------------------------
@@ -18,7 +22,7 @@ data <- read_tsv(
 
 data <- data |>
   mutate(`Valor Índice de inclusión digital` = coalesce(`Valor Índice de inclusión digital`, runif(nrow(data)))) |>
-  # dplyr::sample_n(20) |>
+  # dplyr::sample_n(50) |>
   arrange(`Código Comuna`)
 
 data

@@ -21,12 +21,12 @@ value_box(
 
 card(
   value_box(
-    title = "Región Metropolitana",
+    title = tags$p("Región Metropolitana"),
     value = "Isla de Maipo",
     style = "border:none",
     showcase = tags$p(66, style = "font-size:4rem"),
     showcase_layout = "top right",
   ),
   horizontal_gauge_html(percent = 0.66),
-  tags$small(tags$button("Ver detaller"))
+  tags$small(tags$button("Ver detalles"))
 )
