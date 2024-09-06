@@ -1,10 +1,10 @@
-horizontal_gauge_html <- function(percent){
+horizontal_gauge_html <- function(percent, height = 10){
 
   p2 <- round(percent * 100, 0)
 
   # https://www.color-hex.com/color-palette/35021
   tags$div(
-    style = "width: 100%; height: 10px; display: flex; position: relative;",
+    style = stringr::str_glue("width: 100%; height: {height}px; display: flex; position: relative;"),
     tags$div(style = "background-color: #cc3232; flex: 1; height: 100%"),
     tags$div(style = "background-color: #99c140; flex: 1; height: 100%"),
     tags$div(style = "background-color: #db7b2b; flex: 1; height: 100%"),
@@ -14,3 +14,14 @@ horizontal_gauge_html <- function(percent){
 
 
 }
+
+categorizar_indicador <- function(valor) {
+  case_when(
+    valor <= 0.25 ~ "Muy bajo",
+    valor <= 0.50 ~ "Bajo",
+    valor <= 0.25 ~ "Alto",
+    valor <= 1.00 ~ "Muy alto",
+  )
+}
+
+
