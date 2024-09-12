@@ -9,6 +9,13 @@ library(stringr)
 source("R/helpers.R")
 
 # variables ---------------------------------------------------------------
+colores <- list(
+  gris = "#5F5758",
+  rojo = "#FF3057",
+  ahuesado = "#FDFFDE",
+  blanco = "#FFFFFF"
+)
+
 app_theme <-  bs_theme(
   # bootswatch = "simplex"
 )
@@ -45,7 +52,7 @@ data <- data |>
     v2_cat = categorizar_indicador(v2),
     v3_cat = categorizar_indicador(v3)
 
-    ) |>
+  ) |>
   # dplyr::sample_n(50) |>
   arrange(codigo_comuna)
 
@@ -57,13 +64,14 @@ opts_region <- data |>
   pull()
 
 sidebar_app <- sidebar(
+  id = "mainsidebar",
   sliderInput(
     "habitantes",
     label = "Habitantes",
     min = min(data$habitantes),
     max = max(data$habitantes),
     value =  c(min(data$habitantes), max(data$habitantes))
-    ),
+  ),
   # selectizeInput("region", label = "Región", choices = opts_region),
   sliderInput(
     "indice_desarrollo",
@@ -71,6 +79,6 @@ sidebar_app <- sidebar(
     min = min(data$indice_de_desarrollo_humano),
     max = max(data$indice_de_desarrollo_humano),
     value =  c(min(data$indice_de_desarrollo_humano), max(data$indice_de_desarrollo_humano))
-    ),
+  ),
 )
 

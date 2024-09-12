@@ -29,37 +29,39 @@ function(input, output, session) {
 
         # comuna <- "Copiapó"
         # region <- "Atacama"
-        # valor <- 0.994
+        # valor <- runif(1)
         # codigo <- "03101"
         # v1 <- v2 <- v3 <- runif(1)
 
         card(
+          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
           value_box(
             title = region,
             value = comuna,
-            style = "border:none",
+            style = str_glue("border:none; background-color: {colores$ahuesado}; color: {colores$gris}"),
+            # style = "",
             showcase = tags$p(round(valor * 100), style = "font-size:4rem"),
             showcase_layout = "top right",
           ),
           tags$h3("Indicador de Acceso"),
-          horizontal_gauge_html(percent = valor, height = 15),
+          horizontal_gauge_html(percent = valor, height = 10),
 
-          accordion(
-              open = FALSE,
-              style = "border:none",
-              accordion_panel(
-                title = "Ver detalles",
-                value = "asd",
-                tags$p("Variable 1"),
-                horizontal_gauge_html(percent = v1),
-
-                tags$p("Variable 2"),
-                horizontal_gauge_html(percent = v2),
-
-                tags$p("Varable 3"),
-                horizontal_gauge_html(percent = v3)
-              )
-          )
+          # accordion(
+          #     open = FALSE,
+          #     style = "border:none",
+          #     accordion_panel(
+          #       title = "Ver detalles",
+          #       value = "asd",
+          #       tags$p("Variable 1"),
+          #       horizontal_gauge_html(percent = v1),
+          #
+          #       tags$p("Variable 2"),
+          #       horizontal_gauge_html(percent = v2),
+          #
+          #       tags$p("Varable 3"),
+          #       horizontal_gauge_html(percent = v3)
+          #     )
+          # )
 
           # tags$button("Ver detalles", class="btn btn-primary", type="button", `data-bs-toggle`="collapse",
           #         `data-bs-target`= str_glue("#comuna{codigo}"),

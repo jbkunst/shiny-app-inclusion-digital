@@ -1,14 +1,16 @@
 bslib::page_navbar(
-  title = "Inclusión Digital",
+  title = "Índice de Inclusión Digital",
+  id = "nav",
   theme = app_theme,
   lang = "es",
   sidebar = sidebar_app,
   nav_panel(
-    title = "Resultados por comuna",
+    includeScript("www/custom.js"),
+    title = "Comunas",
     uiOutput("comuna_boxes")
   ),
   nav_panel(
-    title = "Resultados por región",
+    title = "Regiones",
     uiOutput("region_boxes")
   ),
   nav_panel(
