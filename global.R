@@ -17,7 +17,8 @@ colores <- list(
 )
 
 app_theme <-  bs_theme(
-  # bootswatch = "simplex"
+  base_font = font_google("Inria Sans"),
+  primary = colores$gris
 )
 
 # data --------------------------------------------------------------------
