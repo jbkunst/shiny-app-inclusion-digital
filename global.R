@@ -54,7 +54,7 @@ data <- data |>
     v3_cat = categorizar_indicador(v3)
 
   ) |>
-  # dplyr::sample_n(50) |>
+  # dplyr::sample_n(5) |>
   arrange(codigo_comuna)
 
 glimpse(data)
@@ -83,3 +83,5 @@ sidebar_app <- sidebar(
   ),
 )
 
+# partials ----------------------------------------------------------------
+col <- partial(shiny::column, width = 12)
