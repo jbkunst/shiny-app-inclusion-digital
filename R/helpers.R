@@ -27,11 +27,15 @@ horizontal_gauge_html <- function(percent = runif(1), height = 10){
 
 categorizar_indicador <- function(valor) {
   case_when(
-    valor <= 0.25 ~ "Muy bajo",
-    valor <= 0.50 ~ "Bajo",
-    valor <= 0.25 ~ "Alto",
-    valor <= 1.00 ~ "Muy alto",
+    valor <= 0.25 ~ "MUY BAJO",
+    valor <= 0.50 ~ "BAJO",
+    valor <= 0.75 ~ "ALTO",
+    valor <= 1.00 ~ "MUY ALTO",
   )
 }
 
+formatear_numero <- function(valor){
+  # valor <- runif(1)
+  scales::comma(valor, accuracy = 0.1, big.mark = ".", decimal.mark = ",")
+}
 
