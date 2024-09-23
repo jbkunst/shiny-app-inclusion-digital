@@ -1,5 +1,6 @@
 function(input, output, session) {
 
+  # modal bienvenida --------------------------------------------------------
   showModal(
     modalDialog(
       # title = tags$small("Bienvenido al"),
@@ -19,6 +20,7 @@ function(input, output, session) {
       filter(TRUE)
   })
 
+  # comuna ------------------------------------------------------------------
   output$comuna_boxes <- renderUI({
     # data_filtrada <- data
     data_filtrada <- data_filtrada()
@@ -31,87 +33,94 @@ function(input, output, session) {
         # region <- "Atacama"
         # valor <- runif(1)
         # codigo <- "03101"
-        # v1 <- v2 <- v3 <- runif(1)
+        # v1 <- runif(1); v2 <- runif(1); v3 <- runif(1)
 
-        card(
-          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
-          value_box(
-            title = region,
-            value = comuna,
-            style = str_glue("border:none; background-color: {colores$ahuesado}; color: {colores$gris}"),
-            # style = "",
-            showcase = tags$p(round(valor * 100), style = "font-size:4rem"),
-            showcase_layout = "top right",
+
+        lc1 <- layout_columns(
+          col_widths = c(6, 6, 12),
+          # fill = FALSE, fillable = FALSE,
+          col(
+            style="height: 100%;position: relative",
+            tags$h5(style = "position: absolute;bottom: 0", "Indicador acceso")
           ),
-          tags$h3("Indicador de Acceso"),
-          horizontal_gauge_html(percent = valor, height = 10),
-
-          # accordion(
-          #     open = FALSE,
-          #     style = "border:none",
-          #     accordion_panel(
-          #       title = "Ver detalles",
-          #       value = "asd",
-          #       tags$p("Variable 1"),
-          #       horizontal_gauge_html(percent = v1),
-          #
-          #       tags$p("Variable 2"),
-          #       horizontal_gauge_html(percent = v2),
-          #
-          #       tags$p("Varable 3"),
-          #       horizontal_gauge_html(percent = v3)
-          #     )
-          # )
-
-          # tags$button("Ver detalles", class="btn btn-primary", type="button", `data-bs-toggle`="collapse",
-          #         `data-bs-target`= str_glue("#comuna{codigo}"),
-          #         `aria-expanded`="false", `aria-controls`="collapseExample"),
-          #
-          # tags$div(class="collapse", id = str_glue("#comuna{codigo}"),
-
-          # )
-          # tags$button(
-          #   "Ver detalles",
-          #   onclick = stringr::str_glue("(function(){{
-          #     Shiny.onInputChange('codigo', {{valor: '{codigo}', nonce: Math.random()}})
-          #   }})()"),
-          #   class = "btn btn-primary btn-sm"
-          # )
+          col(
+            style = "text-align: right",
+            tags$small(categorizar_indicador(valor)),
+            tags$h1(formatear_numero(valor))
+          ),
+          col(horizontal_gauge_html(percent = valor, height = 10), tags$br()),
         )
+
+        lc2 <- layout_columns(
+          col_widths = c(6, 6, 12),
+          # fill = FALSE, fillable = FALSE,
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 1")),
+          col(style = "text-align: right",tags$small(categorizar_indicador(v1)), tags$h1(formatear_numero(v1))),
+          col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 2")),
+          col(style = "text-align: right",tags$small(categorizar_indicador(v2)), tags$h1(formatear_numero(v2))),
+          col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 3")),
+          col(style = "text-align: right",tags$small(categorizar_indicador(v3)), tags$h1(formatear_numero(v3))),
+          horizontal_gauge_html(percent = v3, height = 10)
+        )
+
+        c <- card(
+          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
+          # tags$small(region),
+          tags$h2(tags$strong(str_to_upper(comuna))),
+          lc1,
+          tags$div(id = str_glue("comuna{codigo}"), class = "collapse", lc2),
+          tags$button(
+            "Ver detalle",
+            onclick = str_glue("$('#comuna{codigo}').collapse('toggle'); this.textContent = this.textContent === 'Ver detalle' ? 'Cerrar detalle' : 'Ver detalle';"),
+            class = "btn btn-primary btn-md",
+            style = "max-width:160px"
+          ),
+        )
+
+        c
+        # lc2 |> as.character() |> cat()
+
+        c
+
+        # c |> as.character() |> cat()
+
+        # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
+
 
       })
 
-    layout_column_wrap(
-      width = 1/1,
-      fillable = TRUE,
-      fill = TRUE,
+    layout_columns(
+      col_widths = 6,
+      fill = FALSE, fillable = FALSE,
       !!!value_boxes
       )
 
   })
 
-  observeEvent(input$codigo, {
-
-    cli::cli_inform(input$codigo)
-    v <- input$codigo$valor
-    # v <- "03101"
-
-    vals <- data |>
-      filter(`Código Comuna` == v) |>
-      as.list()
-
-    showModal(
-      modalDialog(
-        title = vals$Comuna,
-        size = "s",
-        # footer = modalButton("Cerrar"),
-        footer = tags$button(type = "button", class = "btn btn-primary",
-                             `data-dismiss` = "modal",
-                             `data-bs-dismiss` = "modal",
-                             "Cerrar")
-      )
-    )
-
-  })
+  # observeEvent(input$codigo, {
+  #
+  #   cli::cli_inform(input$codigo)
+  #   v <- input$codigo$valor
+  #   # v <- "03101"
+  #
+  #   vals <- data |>
+  #     filter(`Código Comuna` == v) |>
+  #     as.list()
+  #
+  #   showModal(
+  #     modalDialog(
+  #       title = vals$Comuna,
+  #       size = "s",
+  #       # footer = modalButton("Cerrar"),
+  #       footer = tags$button(type = "button", class = "btn btn-primary",
+  #                            `data-dismiss` = "modal",
+  #                            `data-bs-dismiss` = "modal",
+  #                            "Cerrar")
+  #     )
+  #   )
+  #
+  # })
 
 }
