@@ -8,8 +8,13 @@ bslib::page_navbar(
   sidebar = sidebar_app,
   nav_spacer(),
   nav_panel(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    ),
     includeScript("www/custom.js"),
     title = "Resultados por comuna",
+    tags$h4(("Resultados por Comuna"), style = "margin: 0;padding: 0;"),
+    uiOutput("comuna_resultados", inline = TRUE),
     uiOutput("comuna_boxes")
   ),
   nav_panel(
