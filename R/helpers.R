@@ -40,3 +40,11 @@ formatear_numero <- function(valor){
   coalesce(x, "-")
 }
 
+str_clean <- function (x)  {
+  # assertthat::assert_that(is.character(x) | is.factor(x))
+  x |>
+    as.character() |>
+    stringr::str_trim() |>
+    janitor::make_clean_names() |>
+    str_replace_all("_", " ")
+}
