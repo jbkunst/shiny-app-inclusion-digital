@@ -1,0 +1,29 @@
+.irs--shiny .irs-handle {
+  background-color: #AEAEB2;
+}
+
+.irs--shiny .irs-bar {
+  background: #AEAEB2;
+}
+
+
+#buscar {
+    border: none;
+    border-bottom: 2px solid #AEAEB2; /* Color del borde inferior */
+    border-radius: 0; /* Sin bordes redondeados */
+    outline: none; /* Sin contorno al enfocar */
+    transition: border-color 0.3s; /* Transición suave para el color del borde */
+}
+
+#buscar:focus {
+    border-bottom: 2px solid #AEAEB2; /* Color del borde inferior al enfocar */
+}
+
+#buscar::placeholder {
+    color: #AEAEB2; /* Color del placeholder */
+    opacity: 1; /* Asegurarte de que el placeholder no sea transparente */
+}
+
+#segmento > div > .checkbtn {
+  margin: 5px;
+}
