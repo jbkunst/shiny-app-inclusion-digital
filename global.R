@@ -5,6 +5,7 @@ library(readr)
 library(dplyr)
 library(purrr)
 library(stringr)
+library(shinyWidgets)
 
 source("R/helpers.R")
 
@@ -20,6 +21,8 @@ colores <- list(
 app_theme <-  bs_theme(
   base_font = font_google("Inria Sans", wght = c(300, 400)),
   primary = colores$gris,
+  danger  = colores$rojo,
+  info = colores$gris2,
   # "navbar-light-bg" = colores$gris,
   # "navbar-dark-bg" = colores$gris,
   # "navbar-light-color" = colores$ahuesado,
@@ -27,7 +30,14 @@ app_theme <-  bs_theme(
   bg = colores$blanco,
   fg = colores$gris,
   "navbar-dark-active-color" = colores$ahuesado,
-)
+) |>
+  bs_add_rules(
+    list(
+      # sass::sass_file("www/custom.css")
+      # sass::sass_file("custom.scss"),
+      # "body { background-color: $body-bg; }"
+    )
+  )
 
 # bslib::bs_theme_preview(app_theme)
 
@@ -71,18 +81,100 @@ data <- data |>
   select(1:14) |>
   filter(TRUE)
 
-# data <- data |>
-#   sample_n(50)
-
 glimpse(data)
 
+
+# generando valueboxes ----------------------------------------------------
+cli::cli_inform("Partiendo value_boxes")
+
+if(file.exists("data/data.rds")){
+  data <- read_rds("data/data.rds")
+} else {
+
+  value_boxes <- data |>
+    select(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat) |>
+    purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat){
+
+      # cli::cli_inform(comuna)
+      # comuna <- "Copiapó"
+      # region <- "Atacama"
+      # codigo_comuna <- "03101"
+      # v <- v1 <- v2 <- v3 <- 0.432
+      # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+
+      lc1 <- layout_columns(
+        col_widths = c(6, 6, 12),
+        # fill = FALSE, fillable = FALSE,
+        col(
+          style="height: 100%;position: relative",
+          tags$h5(style = "position: absolute;bottom: 0", "Indicador acceso")
+        ),
+        col(
+          style = "text-align: right",
+          tags$small(coalesce(v_cat, "-")),
+          tags$h1(formatear_numero(v))
+        ),
+        col(horizontal_gauge_html(percent = v, height = 10), tags$br()),
+      )
+
+      lc2 <- layout_columns(
+        col_widths = c(6, 6, 12),
+        # fill = FALSE, fillable = FALSE,
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 1")),
+        col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
+        col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 2")),
+        col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
+        col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 3")),
+        col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
+        horizontal_gauge_html(percent = v3, height = 10)
+      )
+
+      c <- card(
+        style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
+        # tags$small(region),
+        tags$h2(tags$strong(str_to_upper(comuna))),
+        lc1,
+        tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
+        tags$button(
+          "Ver subindicadores",
+          onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
+          class = "btn btn-primary btn-md",
+          style = "max-width:200px"
+        ),
+      )
+
+      c
+      # lc2 |> as.character() |> cat()
+
+      c
+
+      # c |> as.character() |> cat()
+
+      # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
+
+
+    })
+
+  data <- data |>
+    mutate(value_box = value_boxes)
+
+  rm(value_boxes)
+
+  saveRDS(data, "data/data.rds")
+
+}
+
+cli::cli_inform("Terminando value_boxes")
+
+# data <- data |>
+#   sample_n(50)
 
 # sidebar -----------------------------------------------------------------
 opts_region <- data |>
   distinct(region) |>
   pull()
-
-
 
 sidebar_app <- sidebar(
   id = "mainsidebar",
@@ -92,12 +184,16 @@ sidebar_app <- sidebar(
     label = "Ordenar",
     choices = c(
       "Alfabéticamente",
-      "Alfabéticamente descendente"
+      "Alfabéticamente descendente",
+      "Inclusión digital",
+      "Inclusión digital descendente"
       ),
     choicesOpt = list(
       icon = c(
         "glyphicon glyphicon-sort-by-alphabet",
-        "glyphicon glyphicon-sort-by-alphabet-alt"
+        "glyphicon glyphicon-sort-by-alphabet-alt",
+        "glyphicon glyphicon-sort-by-order",
+        "glyphicon glyphicon-sort-by-order-alt"
         )
       ),
     options = list(`icon-base` = "")
@@ -105,19 +201,38 @@ sidebar_app <- sidebar(
   sliderInput(
     "habitantes",
     label = "Habitantes",
-    min = min(data$habitantes),
-    max = max(data$habitantes),
-    value =  c(min(data$habitantes), max(data$habitantes))
+    # min = min(data$habitantes),
+    # max = max(data$habitantes),
+    # value =  c(min(data$habitantes), max(data$habitantes))
+    min = 100,
+    max = 700000,
+    value = c(100, 700000)
   ),
-  # selectizeInput("region", label = "Región", choices = opts_region),
   sliderInput(
     "indice_desarrollo",
     label = "Índice desarrollo humano",
-    min = min(data$indice_de_desarrollo_humano, na.rm = TRUE),
-    max = max(data$indice_de_desarrollo_humano, na.rm = TRUE),
-    value =  c(min(data$indice_de_desarrollo_humano, na.rm = TRUE), max(data$indice_de_desarrollo_humano, na.rm = TRUE))
-  ),
-  "Segmento índice de inclusión digital"
+    # min = min(data$indice_de_desarrollo_humano, na.rm = TRUE),
+    # max = max(data$indice_de_desarrollo_humano, na.rm = TRUE),
+    # value =  c(min(data$indice_de_desarrollo_humano, na.rm = TRUE), max(data$indice_de_desarrollo_humano, na.rm = TRUE))
+    min = 0,
+    max = 1,
+    value = c(0, 1)
+     ),
+  selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE),
+  checkboxGroupButtons(
+    inputId = "segmento",
+    label = "Segmento índice de inclusión digital",
+    size = "sm",
+    individual = TRUE,
+    justified = FALSE,
+    status = "info",
+    choices = c("Option 1",  "Option 2", "Option 3", "Option 4"),
+    # checkIcon = list(
+    #   yes = tags$i(class = "fa fa-check-square", style = "color: steelblue"),
+    #   no = tags$i(class = "fa fa-square-o", style = "color: steelblue")
+    #   )
+    ),
+  shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger")
 )
 
 # partials ----------------------------------------------------------------
