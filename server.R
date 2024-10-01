@@ -1,17 +1,17 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  showModal(
-    modalDialog(
-      # title = tags$small("Bienvenido al"),
-      tags$p("Bienvenido al"),
-      tags$h1("Índice inclusión Digital"),
-      tags$br(),
-      tags$p("Definición o texto introductorio del índice..."),
-      easyClose = TRUE,
-      footer = NULL
-    )
-  )
+  # showModal(
+  #   modalDialog(
+  #     # title = tags$small("Bienvenido al"),
+  #     tags$p("Bienvenido al"),
+  #     tags$h1("Índice inclusión Digital"),
+  #     tags$br(),
+  #     tags$p("Definición o texto introductorio del índice..."),
+  #     easyClose = TRUE,
+  #     footer = NULL
+  #   )
+  # )
 
   data_filtrada <- reactive({
     data |>
@@ -25,16 +25,18 @@ function(input, output, session) {
     # data_filtrada <- data
     data_filtrada <- data_filtrada()
 
-    value_boxes <- data_filtrada |>
-      select(comuna, region, valor = indice_inclusion_digital, codigo = codigo_comuna, v1, v2, v3) |>
-      purrr::pmap(function(comuna, region, valor, codigo, v1, v2, v3){
+    cli::cli_inform("Partiendo value_boxes")
 
+    value_boxes <- data_filtrada |>
+      select(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat) |>
+      purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat){
+
+        # cli::cli_inform(comuna)
         # comuna <- "Copiapó"
         # region <- "Atacama"
-        # valor <- runif(1)
-        # codigo <- "03101"
-        # v1 <- runif(1); v2 <- runif(1); v3 <- runif(1)
-
+        # codigo_comuna <- "03101"
+        # v <- v1 <- v2 <- v3 <- 0.432
+        # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
 
         lc1 <- layout_columns(
           col_widths = c(6, 6, 12),
@@ -45,23 +47,23 @@ function(input, output, session) {
           ),
           col(
             style = "text-align: right",
-            tags$small(categorizar_indicador(valor)),
-            tags$h1(formatear_numero(valor))
+            tags$small(coalesce(v_cat, "-")),
+            tags$h1(formatear_numero(v))
           ),
-          col(horizontal_gauge_html(percent = valor, height = 10), tags$br()),
+          col(horizontal_gauge_html(percent = v, height = 10), tags$br()),
         )
 
         lc2 <- layout_columns(
           col_widths = c(6, 6, 12),
           # fill = FALSE, fillable = FALSE,
           col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 1")),
-          col(style = "text-align: right",tags$small(categorizar_indicador(v1)), tags$h1(formatear_numero(v1))),
+          col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
           col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
           col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 2")),
-          col(style = "text-align: right",tags$small(categorizar_indicador(v2)), tags$h1(formatear_numero(v2))),
+          col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
           col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
           col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 3")),
-          col(style = "text-align: right",tags$small(categorizar_indicador(v3)), tags$h1(formatear_numero(v3))),
+          col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
           horizontal_gauge_html(percent = v3, height = 10)
         )
 
@@ -70,12 +72,12 @@ function(input, output, session) {
           # tags$small(region),
           tags$h2(tags$strong(str_to_upper(comuna))),
           lc1,
-          tags$div(id = str_glue("comuna{codigo}"), class = "collapse", lc2),
+          tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
           tags$button(
-            "Ver detalle",
-            onclick = str_glue("$('#comuna{codigo}').collapse('toggle'); this.textContent = this.textContent === 'Ver detalle' ? 'Cerrar detalle' : 'Ver detalle';"),
+            "Ver subindicadores",
+            onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
             class = "btn btn-primary btn-md",
-            style = "max-width:160px"
+            style = "max-width:200px"
           ),
         )
 
@@ -91,8 +93,10 @@ function(input, output, session) {
 
       })
 
+    cli::cli_inform("Terminando value_boxes")
+
     layout_columns(
-      col_widths = 6,
+      col_widths = 4,
       fill = FALSE, fillable = FALSE,
       !!!value_boxes
       )

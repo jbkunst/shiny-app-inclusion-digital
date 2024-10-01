@@ -11,15 +11,25 @@ source("R/helpers.R")
 # variables ---------------------------------------------------------------
 colores <- list(
   gris = "#5F5758",
+  gris2 = "#AEAEB2",
   rojo = "#FF3057",
-  ahuesado = "#FDFFDE",
+  ahuesado = "#F6F3DF",
   blanco = "#FFFFFF"
 )
 
 app_theme <-  bs_theme(
-  base_font = font_google("Inria Sans"),
-  primary = colores$gris
+  base_font = font_google("Inria Sans", wght = c(300, 400)),
+  primary = colores$gris,
+  # "navbar-light-bg" = colores$gris,
+  # "navbar-dark-bg" = colores$gris,
+  # "navbar-light-color" = colores$ahuesado,
+  # "navbar-dark-color" = colores$ahuesado,
+  bg = colores$blanco,
+  fg = colores$gris,
+  "navbar-dark-active-color" = colores$ahuesado,
 )
+
+# bslib::bs_theme_preview(app_theme)
 
 # data --------------------------------------------------------------------
 set.seed(123)
@@ -27,6 +37,7 @@ set.seed(123)
 #   "https://docs.google.com/spreadsheets/d/1j-lVC0T7NxXqg66HxFO14KbRB-9Kzz9XTEmQz84Wl3Y/pub?gid=0&single=true&output=tsv",
 #   locale = locale(decimal_mark = ",")
 #   )
+# write_tsv(data, "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv")
 
 data <- read_tsv(
   "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv",
@@ -35,37 +46,62 @@ data <- read_tsv(
 
 glimpse(data)
 
+data <- janitor::clean_names(data)
+
 data <- data |>
+  rename(
+    v = valor_indice_de_inclusion_digital_7,
+    v_cat = categoria_indice_de_inclusion_digital,
+    v1 = valor_sub_indicador_1_acceso_9,
+    v1_cat = categoria_sub_indicador_1_acceso,
+    v2 = valor_sub_indicador_2_politico_11,
+    v2_cat = categoria_sub_indicador_2_politico,
+    v3 = valor_sub_indicador_3_educativo_13,
+    v3_cat = categoria_sub_indicador_3_educativo
+  )
+
+data <- data |>
+  mutate(across(c(v_cat, v1_cat, v2_cat, v3_cat), str_to_upper)) |>
+  mutate(across(c(v,v1, v2, v3), as.numeric)) |>
   mutate(
-    region = Región,
-    comuna = Comuna,
-    codigo_comuna = `Código Comuna`,
-    habitantes = Habitantes,
-    indice_de_desarrollo_humano = coalesce(`Índice de desarrollo humano`, runif(nrow(data))),
-    indice_de_desarrollo_humano = round(indice_de_desarrollo_humano, 2),
-    indice_inclusion_digital = coalesce(`Valor Índice de inclusión digital`, runif(nrow(data))),
+    indice_de_desarrollo_humano = as.numeric(indice_de_desarrollo_humano)
+  )
 
-    v1 = coalesce(`Valor sub indicador 1 estandarizado_Acceso`, runif(nrow(data))),
-    v2 = coalesce(`Valor sub indicador 2 estandarizado`, runif(nrow(data))),
-    v3 = coalesce(`Valor sub indicador 3 estandarizado`, runif(nrow(data))),
+data <- data |>
+  select(1:14) |>
+  filter(TRUE)
 
-    v1_cat = categorizar_indicador(v1),
-    v2_cat = categorizar_indicador(v2),
-    v3_cat = categorizar_indicador(v3)
-
-  ) |>
-  # dplyr::sample_n(5) |>
-  arrange(codigo_comuna)
+# data <- data |>
+#   sample_n(50)
 
 glimpse(data)
+
 
 # sidebar -----------------------------------------------------------------
 opts_region <- data |>
   distinct(region) |>
   pull()
 
+
+
 sidebar_app <- sidebar(
   id = "mainsidebar",
+  textInput(inputId = "buscar", label = "Buscar"),
+  shinyWidgets::pickerInput(
+    inputId = "orden",
+    label = "Ordenar",
+    choices = c(
+      "Alfabéticamente",
+      "Alfabéticamente descendente"
+      ),
+    choicesOpt = list(
+      icon = c(
+        "glyphicon glyphicon-sort-by-alphabet",
+        "glyphicon glyphicon-sort-by-alphabet-alt"
+        )
+      ),
+    options = list(`icon-base` = "")
+  ),
   sliderInput(
     "habitantes",
     label = "Habitantes",
@@ -77,10 +113,11 @@ sidebar_app <- sidebar(
   sliderInput(
     "indice_desarrollo",
     label = "Índice desarrollo humano",
-    min = min(data$indice_de_desarrollo_humano),
-    max = max(data$indice_de_desarrollo_humano),
-    value =  c(min(data$indice_de_desarrollo_humano), max(data$indice_de_desarrollo_humano))
+    min = min(data$indice_de_desarrollo_humano, na.rm = TRUE),
+    max = max(data$indice_de_desarrollo_humano, na.rm = TRUE),
+    value =  c(min(data$indice_de_desarrollo_humano, na.rm = TRUE), max(data$indice_de_desarrollo_humano, na.rm = TRUE))
   ),
+  "Segmento índice de inclusión digital"
 )
 
 # partials ----------------------------------------------------------------

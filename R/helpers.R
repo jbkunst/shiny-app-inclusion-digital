@@ -36,6 +36,7 @@ categorizar_indicador <- function(valor) {
 
 formatear_numero <- function(valor){
   # valor <- runif(1)
-  scales::comma(valor, accuracy = 0.1, big.mark = ".", decimal.mark = ",")
+  x <- scales::comma(valor, accuracy = 0.001, big.mark = ".", decimal.mark = ",")
+  coalesce(x, "-")
 }
 
