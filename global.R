@@ -181,7 +181,7 @@ sidebar_app <- sidebar(
   textInput(inputId = "buscar", label = "Buscar"),
   shinyWidgets::pickerInput(
     inputId = "orden",
-    label = "Ordenar",
+    label = "Ordenar según",
     choices = c(
       "Alfabéticamente",
       "Alfabéticamente descendente",
@@ -225,8 +225,8 @@ sidebar_app <- sidebar(
     size = "sm",
     individual = TRUE,
     justified = FALSE,
-    status = "info",
-    choices = c("Option 1",  "Option 2", "Option 3", "Option 4"),
+    # status = "primary",
+    choices = c("Alto", "Medio Alto", "Medio Bajo", "Bajo"),
     # checkIcon = list(
     #   yes = tags$i(class = "fa fa-check-square", style = "color: steelblue"),
     #   no = tags$i(class = "fa fa-square-o", style = "color: steelblue")

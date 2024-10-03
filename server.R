@@ -18,7 +18,7 @@ function(input, output, session) {
 
     cli::cli_inform("reactive `data_filtrada`")
 
-    str(as.list(input)) |> print()
+    str(reactiveValuesToList(input)) |> print()
     data_filtrada <- data
 
     if(input$buscar != ""){
@@ -26,10 +26,21 @@ function(input, output, session) {
         filter(str_detect(str_clean(comuna), str_clean(input$buscar)))
     }
 
-
     if(!is.null(input$region)){
       data_filtrada <- data_filtrada |>
         filter(region %in% input$region)
+    }
+
+    # checkboxgroup
+    inds <- c()
+    if(input$segmento1) inds <- c(inds, "ALTO")
+    if(input$segmento2) inds <- c(inds, "MEDIO ALTO")
+    if(input$segmento3) inds <- c(inds, "MEDIO BAJO")
+    if(input$segmento4) inds <- c(inds, "BAJO")
+
+    if(!is.null(inds)){
+      data_filtrada <- data_filtrada |>
+        filter(v_cat %in% inds)
     }
 
     data_filtrada <- data_filtrada |>
@@ -54,7 +65,7 @@ function(input, output, session) {
 
   # texto comuna ------------------------------------------------------------
   output$comuna_resultados <- renderUI({
-
+    cli::cli_inform("output `comuna_resultados`")
     # data_filtrada <- data
     data_filtrada <- data_filtrada()
     str_glue("{nrow(data_filtrada)} comunas")
