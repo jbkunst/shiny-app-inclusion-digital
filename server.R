@@ -33,6 +33,31 @@ function(input, output, session) {
     )
   )
 
+
+  # observer de seccion -----------------------------------------------------
+  observe({
+
+    cli::cli_inform("observe `nav` {input$nav}")
+
+    sidebar_toggle(
+      id = "mainsidebar",
+      open = input$nav != "Metodología"
+    )
+
+    # si cambia de tipo de resultado restea filtros
+    if(input$nav != "Metodología") {
+      updateTextInput(session, "buscar", value = "")
+      shinyWidgets::updatePickerInput(session, "orden", selected = "Alfabéticamente")
+      updateSliderInput(session, "habitantes", value = c(100, 700000))
+      updateSliderInput(session, "indice_desarrollo", value = c(0, 1))
+      updateSelectizeInput(session, "region", selected = "Metropolitana")
+      shinyWidgets::updateCheckboxGroupButtons(session, "segmento", selected = character(0))
+    }
+
+  }) |>
+    bindEvent(input$nav)
+
+  # comuna ------------------------------------------------------------------
   data_filtrada <- reactive({
 
     cli::cli_inform("reactive `data_filtrada`")
@@ -79,30 +104,8 @@ function(input, output, session) {
     data_filtrada
 
   }) |>
-    bindEvent(input$go, ignoreNULL = FALSE)
+    bindEvent(input$go, input$orden, ignoreNULL = FALSE)
 
-
-  # observer de seccion -----------------------------------------------------
-  # en en
-  observe({
-
-    cli::cli_inform("observe `nav` {input$nav}")
-
-    sidebar_toggle(
-      id = "mainsidebar",
-      open = input$nav != "Metodología"
-    )
-
-    # si cambia de tipo de resultado restea filtros
-    if(input$nav != "Metodología") {
-
-    }
-
-  }) |>
-    bindEvent(input$nav)
-
-
-  # texto comuna ------------------------------------------------------------
   output$comuna_resultados <- renderUI({
     cli::cli_inform("output `comuna_resultados`")
     # data_filtrada <- data
@@ -111,8 +114,6 @@ function(input, output, session) {
 
   })
 
-
-  # comuna ------------------------------------------------------------------
   output$comuna_boxes <- renderUI({
 
     cli::cli_inform("output `comuna_boxes`")
@@ -127,5 +128,79 @@ function(input, output, session) {
       )
 
   })
+
+  # region ------------------------------------------------------------------
+  data_filtrada_regiones <- reactive({
+
+    cli::cli_inform("reactive `data_filtrada_regiones`")
+
+    str(reactiveValuesToList(input)) |> print()
+    data_filtrada_regiones <- data_regiones
+
+    if(input$buscar != ""){
+      data_filtrada_regiones <- data_filtrada_regiones |>
+        filter(str_detect(str_clean(region), str_clean(input$buscar)))
+    }
+
+    # if(!is.null(input$region)){
+    #   data_filtrada <- data_filtrada |>
+    #     filter(region %in% input$region)
+    # }
+
+    # checkboxgroup
+    inds <- c()
+    if(input$segmento1) inds <- c(inds, "ALTO")
+    if(input$segmento2) inds <- c(inds, "MEDIO ALTO")
+    if(input$segmento3) inds <- c(inds, "MEDIO BAJO")
+    if(input$segmento4) inds <- c(inds, "BAJO")
+
+    if(!is.null(inds)){
+      data_filtrada_regiones <- data_filtrada_regiones |>
+        filter(v_cat %in% inds)
+    }
+
+    # data_filtrada_regiones <- data_filtrada_regiones |>
+    #   filter(input$habitantes[1]        <= habitantes                 , habitantes                  <= input$habitantes[2]       ) |>
+    #   filter(input$indice_desarrollo[1] <= indice_de_desarrollo_humano, indice_de_desarrollo_humano <= input$indice_desarrollo[2]) |>
+    #   filter(TRUE)
+
+    # orden
+    if(input$orden == "Alfabéticamente")                   data_filtrada_regiones <- data_filtrada_regiones |> arrange(region)
+    if(input$orden == "Alfabéticamente descendente")       data_filtrada_regiones <- data_filtrada_regiones |> arrange(desc(region))
+    if(input$orden == "Índice digitalización ascendente")  data_filtrada_regiones <- data_filtrada_regiones |> arrange(v)
+    if(input$orden == "Índice digitalización descendente") data_filtrada_regiones <- data_filtrada_regiones |> arrange(desc(v))
+
+
+    cli::cli_inform("reactive `data_filtrada_regiones` {nrow(data_filtrada_regiones)} regiones")
+
+    data_filtrada_regiones
+
+  }) |>
+    bindEvent(input$go, input$orden, ignoreNULL = FALSE)
+
+  output$region_resultados <- renderUI({
+    cli::cli_inform("output `region_resultados`")
+    # data_filtrada <- data
+    data_filtrada_regiones <- data_filtrada_regiones()
+    str_glue("{nrow(data_filtrada_regiones)} regiones")
+
+  })
+
+  output$region_boxes <- renderUI({
+
+    cli::cli_inform("output `region_boxes`")
+
+    # data_filtrada_regiones <- data_regiones
+    data_filtrada_regiones <- data_filtrada_regiones()
+
+    layout_columns(
+      col_widths = 4,
+      fill = FALSE, fillable = FALSE,
+      !!!data_filtrada_regiones$value_box
+    )
+
+  })
+
+
 
 }
