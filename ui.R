@@ -1,5 +1,7 @@
 bslib::page_navbar(
-  title = tags$span(tags$span("Resultados", style = "font-size:12px;font-weight:300"), tags$br(), "Índice de Inclusión Digital") ,
+  window_title = "Índice de Digitalización Comunal",
+  # title = tags$span(tags$span("Resultados", style = "font-size:12px;font-weight:300"), tags$br(), "Índice de Digitalización Comunal") ,
+  title = tags$img(src = "banner.svg", width = "360px"),
   id = "nav",
   theme = app_theme,
   bg = colores$gris,
@@ -9,6 +11,7 @@ bslib::page_navbar(
   nav_spacer(),
   nav_panel(
     tags$head(
+      tags$link(href = "Favicon_nudos.png", rel = "icon"),
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
     tags$head(
@@ -24,6 +27,8 @@ bslib::page_navbar(
   ),
   nav_panel(
     title = "Resultados por región",
+    tags$h4(("Resultados por Región"), style = "margin: 0;padding: 0;"),
+    uiOutput("region_resultados", inline = TRUE),
     uiOutput("region_boxes")
   ),
   nav_panel(
