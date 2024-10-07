@@ -6,6 +6,7 @@ library(dplyr)
 library(purrr)
 library(stringr)
 library(shinyWidgets)
+library(rmarkdown)
 
 source("R/helpers.R")
 
@@ -30,16 +31,21 @@ app_theme <-  bs_theme(
   bg = colores$blanco,
   fg = colores$gris,
   "navbar-dark-active-color" = colores$ahuesado,
+  "modal-md" = "100%"
 ) |>
   bs_add_rules(
-    list(
-      # sass::sass_file("www/custom.css")
+    # list(
+      sass::sass_file("www/custom.css")
       # sass::sass_file("custom.scss"),
       # "body { background-color: $body-bg; }"
-    )
+    # )
   )
 
 # bslib::bs_theme_preview(app_theme)
+
+
+# partials ----------------------------------------------------------------
+col <- partial(shiny::column, width = 12)
 
 # data --------------------------------------------------------------------
 set.seed(123)
@@ -95,12 +101,13 @@ if(file.exists("data/data.rds")){
     select(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat) |>
     purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat){
 
-      # cli::cli_inform(comuna)
-      # comuna <- "Copiapó"
-      # region <- "Atacama"
-      # codigo_comuna <- "03101"
-      # v <- v1 <- v2 <- v3 <- 0.432
-      # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+      cli::cli_inform(comuna)
+#
+#       comuna <- "Copiapó"
+#       region <- "Atacama"
+#       codigo_comuna <- "03101"
+#       v <- v1 <- v2 <- v3 <- 0.432
+#       v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
 
       lc1 <- layout_columns(
         col_widths = c(6, 6, 12),
@@ -120,13 +127,13 @@ if(file.exists("data/data.rds")){
       lc2 <- layout_columns(
         col_widths = c(6, 6, 12),
         # fill = FALSE, fillable = FALSE,
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 1")),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
         col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
         col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 2")),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
         col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
         col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Subindicador 3")),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
         col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
         horizontal_gauge_html(percent = v3, height = 10)
       )
@@ -135,6 +142,7 @@ if(file.exists("data/data.rds")){
         style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
         # tags$small(region),
         tags$h2(tags$strong(str_to_upper(comuna))),
+        tags$h5(region),
         lc1,
         tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
         tags$button(
@@ -145,17 +153,13 @@ if(file.exists("data/data.rds")){
         ),
       )
 
-      c
       # lc2 |> as.character() |> cat()
-
-      c
-
       # c |> as.character() |> cat()
-
       # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
 
+      c
 
-    })
+})
 
   data <- data |>
     mutate(value_box = value_boxes)
@@ -185,8 +189,8 @@ sidebar_app <- sidebar(
     choices = c(
       "Alfabéticamente",
       "Alfabéticamente descendente",
-      "Inclusión digital",
-      "Inclusión digital descendente"
+      "Índice digitalización ascendente",
+      "Índice digitalización descendente"
       ),
     choicesOpt = list(
       icon = c(
@@ -235,5 +239,3 @@ sidebar_app <- sidebar(
   shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger")
 )
 
-# partials ----------------------------------------------------------------
-col <- partial(shiny::column, width = 12)
