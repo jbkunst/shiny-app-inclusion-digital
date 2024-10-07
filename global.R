@@ -7,6 +7,7 @@ library(purrr)
 library(stringr)
 library(shinyWidgets)
 library(rmarkdown)
+library(markdown)
 
 source("R/helpers.R")
 
@@ -47,8 +48,8 @@ app_theme <-  bs_theme(
 # partials ----------------------------------------------------------------
 col <- partial(shiny::column, width = 12)
 
-# data --------------------------------------------------------------------
-set.seed(123)
+
+# data comunas ------------------------------------------------------------
 # data <- read_tsv(
 #   "https://docs.google.com/spreadsheets/d/1j-lVC0T7NxXqg66HxFO14KbRB-9Kzz9XTEmQz84Wl3Y/pub?gid=0&single=true&output=tsv",
 #   locale = locale(decimal_mark = ",")
@@ -57,10 +58,11 @@ set.seed(123)
 
 data <- read_tsv(
   "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv",
-  locale = locale(decimal_mark = ",")
+  locale = locale(decimal_mark = ","),
+  show_col_types = FALSE
 )
 
-glimpse(data)
+# glimpse(data)
 
 data <- janitor::clean_names(data)
 
@@ -87,8 +89,7 @@ data <- data |>
   select(1:14) |>
   filter(TRUE)
 
-glimpse(data)
-
+# glimpse(data)
 
 # generando valueboxes ----------------------------------------------------
 cli::cli_inform("Partiendo value_boxes")
@@ -175,6 +176,105 @@ cli::cli_inform("Terminando value_boxes")
 # data <- data |>
 #   sample_n(50)
 
+
+# data regiones -----------------------------------------------------------
+data_regiones <- read_tsv(
+  "data/Datos IDC regiones - Índice de inclusión digital.tsv",
+  locale = locale(decimal_mark = ","),
+  show_col_types = FALSE
+)
+
+# glimpse(data_regiones)
+
+data_regiones <- janitor::clean_names(data_regiones)
+
+data_regiones <- data_regiones |>
+  rename(
+    v = idc,
+    v_cat = tramo_idc
+  )
+
+data_regiones <- data_regiones |>
+  mutate(v_cat = str_to_upper(v_cat),
+         v_cat = str_replace_all(v_cat, "-", " "))
+
+data_regiones <- data_regiones |>
+  # select(1:14) |>
+  filter(TRUE)
+
+cli::cli_inform("Partiendo value_boxes regiones")
+
+
+value_boxes <- data_regiones |>
+  select(region, v, v_cat) |>
+  purrr::pmap(function(region, v, v_cat){
+
+    cli::cli_inform(region)
+
+#     region <- "Atacama"
+#     v <- v1 <- v2 <- v3 <- 0.432
+#     v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+
+    lc1 <- layout_columns(
+      col_widths = c(6, 6, 12),
+      # fill = FALSE, fillable = FALSE,
+      col(
+        style="height: 100%;position: relative",
+        tags$h5(style = "position: absolute;bottom: 0", "Indicador acceso")
+      ),
+      col(
+        style = "text-align: right",
+        tags$small(coalesce(v_cat, "-")),
+        tags$h1(formatear_numero(v))
+      ),
+      col(horizontal_gauge_html(percent = v, height = 10), tags$br()),
+    )
+
+    # lc2 <- layout_columns(
+    #   col_widths = c(6, 6, 12),
+    #   # fill = FALSE, fillable = FALSE,
+    #   col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
+    #   col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
+    #   col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
+    #   col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
+    #   col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
+    #   col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
+    #   col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
+    #   col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
+    #   horizontal_gauge_html(percent = v3, height = 10)
+    # )
+
+    c <- card(
+      style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
+      # tags$small(region),
+      tags$h2(tags$strong(str_to_upper(region))),
+      # tags$h5(region),
+      lc1,
+      # tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
+      # tags$button(
+      #   "Ver subindicadores",
+      #   onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
+      #   class = "btn btn-primary btn-md",
+      #   style = "max-width:200px"
+      # ),
+    )
+
+    # lc2 |> as.character() |> cat()
+    # c |> as.character() |> cat()
+    # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
+
+    c
+
+  })
+
+data_regiones <- data_regiones |>
+  mutate(value_box = value_boxes)
+
+rm(value_boxes)
+
+cli::cli_inform("Terminando value_boxes regiones")
+
+
 # sidebar -----------------------------------------------------------------
 opts_region <- data |>
   distinct(region) |>
@@ -202,27 +302,31 @@ sidebar_app <- sidebar(
       ),
     options = list(`icon-base` = "")
   ),
-  sliderInput(
-    "habitantes",
-    label = "Habitantes",
-    # min = min(data$habitantes),
-    # max = max(data$habitantes),
-    # value =  c(min(data$habitantes), max(data$habitantes))
-    min = 100,
-    max = 700000,
-    value = c(100, 700000)
+
+  conditionalPanel(
+    "input.nav === 'Resultados por comuna'",
+    sliderInput(
+      "habitantes",
+      label = "Habitantes",
+      # min = min(data$habitantes),
+      # max = max(data$habitantes),
+      # value =  c(min(data$habitantes), max(data$habitantes))
+      min = 100,
+      max = 700000,
+      value = c(100, 700000)
+    ),
+    sliderInput(
+      "indice_desarrollo",
+      label = "Índice desarrollo humano",
+      # min = min(data$indice_de_desarrollo_humano, na.rm = TRUE),
+      # max = max(data$indice_de_desarrollo_humano, na.rm = TRUE),
+      # value =  c(min(data$indice_de_desarrollo_humano, na.rm = TRUE), max(data$indice_de_desarrollo_humano, na.rm = TRUE))
+      min = 0,
+      max = 1,
+      value = c(0, 1)
+    ),
+    selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE)
   ),
-  sliderInput(
-    "indice_desarrollo",
-    label = "Índice desarrollo humano",
-    # min = min(data$indice_de_desarrollo_humano, na.rm = TRUE),
-    # max = max(data$indice_de_desarrollo_humano, na.rm = TRUE),
-    # value =  c(min(data$indice_de_desarrollo_humano, na.rm = TRUE), max(data$indice_de_desarrollo_humano, na.rm = TRUE))
-    min = 0,
-    max = 1,
-    value = c(0, 1)
-     ),
-  selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE),
   checkboxGroupButtons(
     inputId = "segmento",
     label = "Segmento índice de inclusión digital",
