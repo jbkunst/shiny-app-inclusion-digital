@@ -5,7 +5,7 @@ account: jbkunst
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12615831
-bundleId: 9174549
+bundleId: 9192087
 url: https://jbkunst.shinyapps.io/shiny-app-inclusion-digital/
 version: 1
 asMultiple: FALSE
