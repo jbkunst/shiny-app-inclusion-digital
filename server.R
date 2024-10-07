@@ -2,17 +2,36 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  # showModal(
-  #   modalDialog(
-  #     # title = tags$small("Bienvenido al"),
-  #     tags$p("Bienvenido al"),
-  #     tags$h1("Índice inclusión Digital"),
-  #     tags$br(),
-  #     tags$p("Definición o texto introductorio del índice..."),
-  #     easyClose = TRUE,
-  #     footer = NULL
-  #   )
-  # )
+  showModal(
+    modalDialog(
+      fluidRow(
+        tags$div(
+          class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
+          # width = 8, offset = 2, styles = "max-width: 200px;",
+          tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
+          tags$div(
+            class="text-center",
+            tags$p("Bienvenido al"),
+            tags$h2("Índice de Digitalización Comunal")
+            ),
+          tags$br(),
+          includeMarkdown("data/bienvenida.md"),
+
+          tags$div(
+            class="text-center",
+            tags$button(
+              type = "button", class = "btn btn-danger",
+              style = "width: 300px",
+              `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
+              "Ver resultados"
+            )
+          )
+        )
+      ),
+      easyClose = FALSE,
+      footer = NULL
+    )
+  )
 
   data_filtrada <- reactive({
 
@@ -49,10 +68,10 @@ function(input, output, session) {
       filter(TRUE)
 
     # orden
-    if(input$orden == "Alfabéticamente")               data_filtrada <- data_filtrada |> arrange(comuna)
-    if(input$orden == "Alfabéticamente descendente")   data_filtrada <- data_filtrada |> arrange(desc(comuna))
-    if(input$orden == "Inclusión digital")             data_filtrada <- data_filtrada |> arrange(v)
-    if(input$orden == "Inclusión digital descendente") data_filtrada <- data_filtrada |> arrange(desc(v))
+    if(input$orden == "Alfabéticamente")                   data_filtrada <- data_filtrada |> arrange(comuna)
+    if(input$orden == "Alfabéticamente descendente")       data_filtrada <- data_filtrada |> arrange(desc(comuna))
+    if(input$orden == "Índice digitalización ascendente")  data_filtrada <- data_filtrada |> arrange(v)
+    if(input$orden == "Índice digitalización descendente") data_filtrada <- data_filtrada |> arrange(desc(v))
 
 
     cli::cli_inform("reactive `data_filtrada` {nrow(data_filtrada)} comunas")
@@ -61,6 +80,26 @@ function(input, output, session) {
 
   }) |>
     bindEvent(input$go, ignoreNULL = FALSE)
+
+
+  # observer de seccion -----------------------------------------------------
+  # en en
+  observe({
+
+    cli::cli_inform("observe `nav` {input$nav}")
+
+    sidebar_toggle(
+      id = "mainsidebar",
+      open = input$nav != "Metodología"
+    )
+
+    # si cambia de tipo de resultado restea filtros
+    if(input$nav != "Metodología") {
+
+    }
+
+  }) |>
+    bindEvent(input$nav)
 
 
   # texto comuna ------------------------------------------------------------
