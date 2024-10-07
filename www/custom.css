@@ -1,3 +1,23 @@
+/* */
+.modal-dialog {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.modal-content {
+  height: 100%;
+  width: 100%;
+  border-radius: 0;
+  background: #F6F3DF;
+}
+.modal-body {
+  overflow-y: auto;
+}
+.modal {
+}
+
+/* Sliderds */
 .irs--shiny .irs-handle {
   background-color: #AEAEB2;
 }
@@ -6,7 +26,7 @@
   background: #AEAEB2;
 }
 
-
+/* Cuando de texto */
 #buscar {
     border: none;
     border-bottom: 2px solid #AEAEB2; /* Color del borde inferior */
@@ -24,6 +44,7 @@
     opacity: 1; /* Asegurarte de que el placeholder no sea transparente */
 }
 
+/* Botones con espacios */
 #segmento > div > .checkbtn {
   margin: 5px;
 }
