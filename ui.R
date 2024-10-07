@@ -11,6 +11,11 @@ bslib::page_navbar(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
+    tags$head(
+      tags$style(HTML("
+
+    "))
+    ),
     includeScript("www/custom.js"),
     title = "Resultados por comuna",
     tags$h4(("Resultados por Comuna"), style = "margin: 0;padding: 0;"),
@@ -23,6 +28,27 @@ bslib::page_navbar(
   ),
   nav_panel(
     title = "Metodología",
-    tags$h2("Metodología")
+    column(
+      class = "p-5",
+      width = 8,
+      offset = 2,
+      fluidRow(
+        column(
+          class = "p-10",
+          width = 8,
+          tags$h3(tags$strong("LA METODOLOGÍA"))
+        )
+      ),
+      fluidRow(
+        column(
+          width = 8,
+          shiny::includeMarkdown("data/metodologia.md")
+        ),
+        column(
+          width = 4,
+          shiny::downloadButton(label = "Descargar documento", class = "btn btn-danger", outputId = "downloaddoc")
+        )
+      )
+    )
   ),
 )
