@@ -91,6 +91,70 @@ data <- data |>
 
 # glimpse(data)
 
+
+
+# fix para obtener valores en regiones semaforo ---------------------------
+data |>
+  group_by(v_cat) |>
+  summarise(
+    n(), min(v), max(v)
+  )
+
+
+d1 <- data |>
+  filter(is.na(v_cat))
+
+d2 <- data |>
+  filter(!is.na(v_cat)) |>
+  arrange(v) |>
+  mutate(v_gauge  = ecdf(v)(v)/4, .by = v_cat, .after = v_cat) |>
+  mutate(
+    v_gauge = v_gauge +
+      case_when(
+        v_cat == "BAJO"       ~ 0,
+        v_cat == "MEDIO BAJO" ~ .25,
+        v_cat == "MEDIO ALTO" ~ .50,
+        v_cat == "ALTO"       ~ .75
+      ),
+  ) |>
+  mutate(v3_gauge  = ecdf(v3)(v3)/4, .by = v3_cat, .after = v3_cat) |>
+  mutate(
+    v3_gauge = v3_gauge +
+      case_when(
+        v3_cat == "BAJO"       ~ 0,
+        v3_cat == "MEDIO BAJO" ~ .25,
+        v3_cat == "MEDIO ALTO" ~ .50,
+        v3_cat == "ALTO"       ~ .75
+      ),
+  )
+
+
+data <- bind_rows(d2, d1)
+
+data <- data |>
+  mutate(v1_gauge  = ecdf(v1)(v1)/4, .by = v1_cat, .after = v1_cat) |>
+  mutate(
+    v1_gauge = v1_gauge +
+      case_when(
+        v1_cat == "BAJO"       ~ 0,
+        v1_cat == "MEDIO BAJO" ~ .25,
+        v1_cat == "MEDIO ALTO" ~ .50,
+        v1_cat == "ALTO"       ~ .75
+      ),
+  ) |>
+  mutate(v2_gauge  = ecdf(v2)(v2)/4, .by = v2_cat, .after = v2_cat) |>
+  mutate(
+    v2_gauge = v2_gauge +
+      case_when(
+        v2_cat == "BAJO"       ~ 0,
+        v2_cat == "MEDIO BAJO" ~ .25,
+        v2_cat == "MEDIO ALTO" ~ .50,
+        v2_cat == "ALTO"       ~ .75
+      ),
+  )
+
+
+
 # generando valueboxes ----------------------------------------------------
 cli::cli_inform("Partiendo value_boxes")
 
@@ -99,30 +163,30 @@ if(file.exists("data/data.rds")){
 } else {
 
   value_boxes <- data |>
-    select(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat) |>
-    purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v1, v1_cat, v2, v2_cat, v3, v3_cat){
+    select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
+    purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge){
 
       cli::cli_inform(comuna)
-#
-#       comuna <- "Copiapó"
-#       region <- "Atacama"
-#       codigo_comuna <- "03101"
-#       v <- v1 <- v2 <- v3 <- 0.432
-#       v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+
+      # comuna <- "Copiapó"
+      # region <- "Atacama"
+      # codigo_comuna <- "03101"
+      # v <- v1 <- v2 <- v3 <- v_gauge <- v1_gauge <- v2_gauge <- v3_gauge <- 0.432
+      # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
 
       lc1 <- layout_columns(
         col_widths = c(6, 6, 12),
         # fill = FALSE, fillable = FALSE,
         col(
           style="height: 100%;position: relative",
-          tags$h5(style = "position: absolute;bottom: 0", "Indicador acceso")
+          tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
         ),
         col(
           style = "text-align: right",
           tags$small(coalesce(v_cat, "-")),
           tags$h1(formatear_numero(v))
         ),
-        col(horizontal_gauge_html(percent = v, height = 10), tags$br()),
+        col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
       )
 
       lc2 <- layout_columns(
@@ -130,13 +194,13 @@ if(file.exists("data/data.rds")){
         # fill = FALSE, fillable = FALSE,
         col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
         col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
-        col(horizontal_gauge_html(percent = v1, height = 10), tags$br()),
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
-        col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
-        col(horizontal_gauge_html(percent = v2, height = 10), tags$br()),
+        col(horizontal_gauge_html(percent = v1_gauge, height = 10), tags$br()),
         col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
         col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
-        horizontal_gauge_html(percent = v3, height = 10)
+        horizontal_gauge_html(percent = v3_gauge, height = 10),
+        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
+        col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
+        col(horizontal_gauge_html(percent = v2_gauge, height = 10), tags$br())
       )
 
       c <- card(
@@ -160,7 +224,7 @@ if(file.exists("data/data.rds")){
 
       c
 
-})
+  })
 
   data <- data |>
     mutate(value_box = value_boxes)
@@ -199,6 +263,18 @@ data_regiones <- data_regiones |>
          v_cat = str_replace_all(v_cat, "-", " "))
 
 data_regiones <- data_regiones |>
+  mutate(v_gauge  = ecdf(v)(v)/4, .by = v_cat, .after = v_cat) |>
+  mutate(
+    v_gauge = v_gauge +
+      case_when(
+        v_cat == "BAJO"       ~ 0,
+        v_cat == "MEDIO BAJO" ~ .25,
+        v_cat == "MEDIO ALTO" ~ .50,
+        v_cat == "ALTO"       ~ .75
+      ),
+  )
+
+data_regiones <- data_regiones |>
   # select(1:14) |>
   filter(TRUE)
 
@@ -206,8 +282,8 @@ cli::cli_inform("Partiendo value_boxes regiones")
 
 
 value_boxes <- data_regiones |>
-  select(region, v, v_cat) |>
-  purrr::pmap(function(region, v, v_cat){
+  select(region, v, v_cat, v_gauge) |>
+  purrr::pmap(function(region, v, v_cat, v_gauge){
 
     cli::cli_inform(region)
 
@@ -220,14 +296,14 @@ value_boxes <- data_regiones |>
       # fill = FALSE, fillable = FALSE,
       col(
         style="height: 100%;position: relative",
-        tags$h5(style = "position: absolute;bottom: 0", "Indicador acceso")
+        tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
       ),
       col(
         style = "text-align: right",
         tags$small(coalesce(v_cat, "-")),
         tags$h1(formatear_numero(v))
       ),
-      col(horizontal_gauge_html(percent = v, height = 10), tags$br()),
+      col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
     )
 
     # lc2 <- layout_columns(
@@ -325,7 +401,7 @@ sidebar_app <- sidebar(
       max = 1,
       value = c(0, 1)
     ),
-    selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE)
+    selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE, options = list(placeholder = "Todas las regiones"))
   ),
   checkboxGroupButtons(
     inputId = "segmento",

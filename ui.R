@@ -1,7 +1,7 @@
 bslib::page_navbar(
   window_title = "Índice de Digitalización Comunal",
   # title = tags$span(tags$span("Resultados", style = "font-size:12px;font-weight:300"), tags$br(), "Índice de Digitalización Comunal") ,
-  title = tags$img(src = "banner.svg", width = "360px"),
+  title = tags$img(src = "banner.svg", height = "50px"),
   id = "nav",
   theme = app_theme,
   bg = colores$gris,
