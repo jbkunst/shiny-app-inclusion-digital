@@ -51,9 +51,15 @@ bslib::page_navbar(
         ),
         column(
           width = 4,
-          shiny::downloadButton(label = "Descargar documento", class = "btn btn-danger", outputId = "downloaddoc")
+          tags$a(
+            href="Informe_Índice Digitalización_2024.pdf",
+            "Descargar documento",
+            download=NA,
+            target="_blank",
+            class = "btn btn-danger"
+            )
+          )
         )
       )
-    )
-  ),
-)
+    ),
+  )
