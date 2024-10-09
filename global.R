@@ -153,12 +153,13 @@ data <- data |>
       ),
   )
 
-
+# data <- sample_n(data, 100)
 
 # generando valueboxes ----------------------------------------------------
 cli::cli_inform("Partiendo value_boxes")
 
 if(file.exists("data/data.rds")){
+# if(FALSE){
   data <- read_rds("data/data.rds")
 } else {
 
@@ -190,17 +191,20 @@ if(file.exists("data/data.rds")){
       )
 
       lc2 <- layout_columns(
-        col_widths = c(6, 6, 12),
+        col_widths = c(6, 6, 12, 12),
         # fill = FALSE, fillable = FALSE,
         col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
         col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
-        col(horizontal_gauge_html(percent = v1_gauge, height = 10), tags$br()),
+        col(horizontal_gauge_html(percent = v1_gauge, height = 10)),
+        tags$br(),
         col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
         col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
-        horizontal_gauge_html(percent = v3_gauge, height = 10),
+        col(horizontal_gauge_html(percent = v3_gauge, height = 10)),
+        tags$br(),
         col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
         col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
-        col(horizontal_gauge_html(percent = v2_gauge, height = 10), tags$br())
+        col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
+        # tags$br()
       )
 
       c <- card(
