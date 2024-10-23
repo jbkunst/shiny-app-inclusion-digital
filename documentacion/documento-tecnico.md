@@ -1,0 +1,115 @@
+---
+output:
+  html_document: default
+  word_document: default
+---
+
+# Documento Técnico: Aplicación del Índice de Digitalización Comunal
+
+## 1. Descripción General
+
+La aplicación presenta el Índice de Digitalización Comunal para las comunas de Chile, desarrollado por **NUDOS** (Núcleo Milenio en Desigualdades y Oportunidades Digitales). Su propósito es visualizar y analizar los niveles de digitalización a nivel comunal y regional, proporcionando una herramienta interactiva para comprender las desigualdades y oportunidades digitales en el país.
+
+## 2. Funcionalidades Clave
+
+La aplicación permite la visualización de indicadores de acceso digital, mostrando el Índice de Digitalización y tres subindicadores clave: **Conectividad Hogar**, **Educación Digital** y **Municipio Digital**. Utiliza una interfaz intuitiva basada en tarjetas informativas o "value boxes", que presentan de manera clara los indicadores para cada comuna o región. Los usuarios pueden filtrar y ordenar la información según diversos criterios, incluyendo búsqueda por nombre, ordenamiento, rango de habitantes, índice de desarrollo humano, región y categorías del índice. Además, ofrece la opción de ver subindicadores y detalles adicionales para cada comuna o región.
+
+## 3. Arquitectura de la Aplicación
+
+Desarrollada en **R** utilizando el framework **Shiny** para aplicaciones web interactivas, la aplicación sigue la arquitectura estándar de Shiny con los archivos `global.R`, `ui.R` y `server.R`. El archivo `global.R` contiene la configuración global, la carga de paquetes y datos, y la definición de variables y funciones auxiliares. El `ui.R` define la interfaz de usuario, mientras que el `server.R` maneja la lógica del servidor, gestionando las interacciones y la reactividad de la aplicación.
+
+## 4. Tecnologías y Dependencias
+
+La aplicación utiliza varios paquetes de R para su funcionamiento. A continuación, se presenta una tabla con los paquetes utilizados, su versión más reciente a la fecha, una breve descripción y el enlace al paquete.
+
+| Nombre del Paquete | Versión | Descripción                                                        | Enlace                                                                       |
+|--------------------|---------|--------------------------------------------------------------------|------------------------------------------------------------------------------|
+| `shiny`            | 1.9.1   | Construcción de aplicaciones web interactivas.                     | [CRAN - shiny](https://cran.r-project.org/package=shiny)                     |
+| `bslib`            | 0.8.0   | Tematización y estilos personalizados con Bootstrap.               | [CRAN - bslib](https://cran.r-project.org/package=bslib)                     |
+| `readr`            | 2.1.5   | Lectura y escritura eficiente de archivos de datos.                | [CRAN - readr](https://cran.r-project.org/package=readr)                     |
+| `dplyr`            | 1.1.4   | Manipulación y transformación de datos.                            | [CRAN - dplyr](https://cran.r-project.org/package=dplyr)                     |
+| `purrr`            | 1.0.2   | Programación funcional y manejo de listas.                         | [CRAN - purrr](https://cran.r-project.org/package=purrr)                     |
+| `stringr`          | 1.5.1   | Manipulación de cadenas de caracteres.                             | [CRAN - stringr](https://cran.r-project.org/package=stringr)                 |
+| `shinyWidgets`     | 0.8.7   | Widgets adicionales y mejorados para Shiny.                        | [CRAN - shinyWidgets](https://cran.r-project.org/package=shinyWidgets)       |
+| `rmarkdown`        | 2.28    | Generación de documentos dinámicos en R.                           | [CRAN - rmarkdown](https://cran.r-project.org/package=rmarkdown)             |
+| `markdown`         | 1.13    | Renderización de contenido Markdown en R.                          | [CRAN - markdown](https://cran.r-project.org/package=markdown)               |
+| `janitor`          | 2.2.0   | Limpieza de datos y nombres de columnas.                           | [CRAN - janitor](https://cran.r-project.org/package=janitor)                 |
+| `cli`              | 3.6.3   | Creación de interfaces de línea de comandos.                       | [CRAN - cli](https://cran.r-project.org/package=cli)                         |
+| `sass`             | 0.4.9   | Compilación de archivos SCSS/CSS personalizados.                   | [CRAN - sass](https://cran.r-project.org/package=sass)                       |
+
+
+Además, se incluyen archivos auxiliares como `R/helpers.R`, que contiene funciones personalizadas, y los archivos `www/custom.css` y `www/custom.js` para hojas de estilo y scripts JavaScript personalizados. La aplicación también utiliza la fuente **Inria Sans** de Google Fonts y tematización personalizada con `bslib` y Bootstrap.
+
+Para ejecutar la aplicación, es necesario tener instalado **R** y los paquetes mencionados, así como cualquier dependencia adicional detallada en `helpers.R` u otros archivos.
+
+## 5. Instrucciones de Instalación y Ejecución
+
+Existen dos estrategias principales para servir la aplicación:
+
+### Opción 1: Utilizar shinyapps.io
+
+**shinyapps.io** es un servicio que permite desplegar aplicaciones Shiny en la nube de forma gratuita, con limitaciones adecuadas para aplicaciones pequeñas o de prueba.
+
+Pasos para desplegar la aplicación en shinyapps.io:
+
+1. **Crear una cuenta** en [shinyapps.io](https://www.shinyapps.io/).
+2. **Instalar el paquete `rsconnect`** en R mediante `install.packages("rsconnect")`.
+3. **Configurar las credenciales** siguiendo las instrucciones de shinyapps.io para vincular R con tu cuenta.
+4. **Desplegar la aplicación** utilizando `rsconnect::deployApp()` en RStudio o desde la consola de R.
+5. **Acceder a la aplicación** mediante la URL proporcionada por shinyapps.io una vez completado el despliegue.
+
+### Opción 2: Instalar Shiny Server en un Servidor o VPS
+
+**Shiny Server** es una aplicación de servidor que permite alojar aplicaciones Shiny en tu propio servidor o VPS, ofreciendo más control y capacidad de personalización.
+
+Pasos para instalar Shiny Server:
+
+1. **Preparar el servidor** con una distribución de Linux compatible (por ejemplo, Ubuntu o CentOS).
+2. **Instalar R** y los paquetes necesarios en el servidor.
+3. **Instalar Shiny** en R ejecutando `install.packages("shiny")`.
+4. **Descargar e instalar Shiny Server** desde [posit.co/download/shiny-server/](https://posit.co/download/shiny-server/), siguiendo las instrucciones para tu distribución de Linux.
+5. **Clonar el repositorio de la aplicación** en el directorio donde Shiny Server aloja las aplicaciones (generalmente `/srv/shiny-server/`).
+6. **Iniciar Shiny Server** y verificar que esté funcionando correctamente.
+7. **Acceder a la aplicación** en la dirección IP o dominio del servidor, generalmente en el puerto 3838 (por ejemplo, `http://tu-servidor-ip:3838/tu-aplicacion`).
+
+Para más detalles, se recomienda consultar la documentación oficial y los recursos de soporte de Posit.
+
+## 6. Uso de la Aplicación
+
+La aplicación está diseñada para ser intuitiva y fácil de navegar, permitiendo a los usuarios explorar el Índice de Digitalización Comunal y sus subindicadores para diferentes comunas y regiones de Chile.
+
+### Estructura Principal
+
+Al acceder a la aplicación, aparece una **sección de bienvenida** que proporciona una introducción y el propósito de la aplicación, apareciendo una sola vez por visita. La **barra de navegación superior** permite acceder a las siguientes secciones:
+
+- **Resultados por Comuna**
+- **Resultados por Región**
+- **Metodología**
+
+La **barra lateral de filtros** permite a los usuarios personalizar la información mostrada en las secciones de resultados. Incluye:
+
+- Un cuadro de texto para buscar comunas o regiones por nombre.
+- Un selector para ordenar los resultados.
+- Sliders para filtrar por rango de habitantes e índice de desarrollo humano (en "Resultados por Comuna").
+- Un selector de regiones.
+- Casillas de verificación para filtrar por categorías del índice.
+
+En el **panel de contenido**, se muestran tarjetas informativas o "value boxes" para cada comuna o región, según la sección seleccionada. Cada tarjeta incluye el nombre de la comuna o región, el valor del Índice de Digitalización y su categoría, y ofrece la opción de ver detalles adicionales sobre los subindicadores. Los medidores visuales proporcionan una representación gráfica del rendimiento en cada indicador.
+
+### Cómo Navegar y Utilizar la Aplicación
+
+- **Navegación**: Utiliza la barra de navegación superior para cambiar entre las secciones disponibles.
+- **Aplicación de Filtros**: Ajusta los filtros en la barra lateral según tus criterios de búsqueda y presiona "Aplicar filtros" para actualizar los resultados.
+- **Exploración de Resultados**: Las tarjetas informativas mostrarán las comunas o regiones que cumplen con los criterios seleccionados. Puedes expandir las tarjetas para ver detalles adicionales.
+- **Sección de Metodología**: Accede a información detallada sobre cómo se calculan los índices y subindicadores, incluyendo la posibilidad de descargar informes en PDF.
+
+## 7. Consideraciones Adicionales
+
+### Licencias y Derechos de Autor
+
+Los datos utilizados en la aplicación son generados y proporcionados por **NUDOS** (Núcleo Milenio en Desigualdades y Oportunidades Digitales). Se recomienda citar adecuadamente a NUDOS al utilizar o referenciar la información presentada en la aplicación.
+
+### Contacto y Soporte
+
+Para consultas, soporte técnico o sugerencias sobre la aplicación, puedes contactar a **Francisca Balbontín Puig**: [francisca.balbontinpuig@gmail.com](mailto:francisca.balbontinpuig@gmail.com)
+o **Joshua Kunst Fuentes**: [jbkunst@gmail.com](mailto:jbkunst@gmail.com)
