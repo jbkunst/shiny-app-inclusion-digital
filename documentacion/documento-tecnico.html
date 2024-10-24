@@ -11,7 +11,7 @@
 
 
 
-<title>documento-tecnico</title>
+<title>Documento Técnico: Aplicación del Índice de Digitalización Comunal</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -348,24 +348,50 @@ display: none;
 
 
 
+<h1 class="title toc-ignore">Documento Técnico: Aplicación del Índice de
+Digitalización Comunal</h1>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#descripción-general" id="toc-descripción-general">Descripción General</a></li>
+<li><a href="#arquitectura-de-la-aplicación" id="toc-arquitectura-de-la-aplicación">Arquitectura de la
+Aplicación</a></li>
+<li><a href="#tecnologías-y-dependencias" id="toc-tecnologías-y-dependencias">Tecnologías y Dependencias</a></li>
+<li><a href="#instrucciones-de-instalación-y-ejecución" id="toc-instrucciones-de-instalación-y-ejecución">Instrucciones de
+Instalación y Ejecución</a>
+<ul>
+<li><a href="#opción-1-utilizar-shinyapps.io" id="toc-opción-1-utilizar-shinyapps.io">Opción 1: Utilizar
+shinyapps.io</a></li>
+<li><a href="#opción-2-instalar-shiny-server-en-un-servidor-o-vps" id="toc-opción-2-instalar-shiny-server-en-un-servidor-o-vps">Opción 2:
+Instalar Shiny Server en un Servidor o VPS</a></li>
+</ul></li>
+<li><a href="#uso-de-la-aplicación" id="toc-uso-de-la-aplicación">Uso de
+la Aplicación</a>
+<ul>
+<li><a href="#estructura-principal" id="toc-estructura-principal">Estructura Principal</a></li>
+<li><a href="#cómo-navegar-y-utilizar-la-aplicación" id="toc-cómo-navegar-y-utilizar-la-aplicación">Cómo Navegar y Utilizar
+la Aplicación</a></li>
+</ul></li>
+<li><a href="#consideraciones-adicionales" id="toc-consideraciones-adicionales">Consideraciones Adicionales</a>
+<ul>
+<li><a href="#licencias-y-derechos-de-autor" id="toc-licencias-y-derechos-de-autor">Licencias y Derechos de
+Autor</a></li>
+<li><a href="#contacto-y-soporte" id="toc-contacto-y-soporte">Contacto y
+Soporte</a></li>
+</ul></li>
+</ul>
+</div>
 
-<div id="documento-técnico-aplicación-del-índice-de-digitalización-comunal" class="section level1">
-<h1>Documento Técnico: Aplicación del Índice de Digitalización
-Comunal</h1>
 <div id="descripción-general" class="section level2">
-<h2>1. Descripción General</h2>
+<h2>Descripción General</h2>
 <p>La aplicación presenta el Índice de Digitalización Comunal para las
 comunas de Chile, desarrollado por <strong>NUDOS</strong> (Núcleo
 Milenio en Desigualdades y Oportunidades Digitales). Su propósito es
 visualizar y analizar los niveles de digitalización a nivel comunal y
 regional, proporcionando una herramienta interactiva para comprender las
 desigualdades y oportunidades digitales en el país.</p>
-</div>
-<div id="funcionalidades-clave" class="section level2">
-<h2>2. Funcionalidades Clave</h2>
 <p>La aplicación permite la visualización de indicadores de acceso
 digital, mostrando el Índice de Digitalización y tres subindicadores
 clave: <strong>Conectividad Hogar</strong>, <strong>Educación
@@ -379,7 +405,7 @@ Además, ofrece la opción de ver subindicadores y detalles adicionales
 para cada comuna o región.</p>
 </div>
 <div id="arquitectura-de-la-aplicación" class="section level2">
-<h2>3. Arquitectura de la Aplicación</h2>
+<h2>Arquitectura de la Aplicación</h2>
 <p>Desarrollada en <strong>R</strong> utilizando el framework
 <strong>Shiny</strong> para aplicaciones web interactivas, la aplicación
 sigue la arquitectura estándar de Shiny con los archivos
@@ -391,7 +417,7 @@ que el <code>server.R</code> maneja la lógica del servidor, gestionando
 las interacciones y la reactividad de la aplicación.</p>
 </div>
 <div id="tecnologías-y-dependencias" class="section level2">
-<h2>4. Tecnologías y Dependencias</h2>
+<h2>Tecnologías y Dependencias</h2>
 <p>La aplicación utiliza varios paquetes de R para su funcionamiento. A
 continuación, se presenta una tabla con los paquetes utilizados, su
 versión más reciente a la fecha, una breve descripción y el enlace al
@@ -504,12 +530,10 @@ hojas de estilo y scripts JavaScript personalizados. La aplicación
 también utiliza la fuente <strong>Inria Sans</strong> de Google Fonts y
 tematización personalizada con <code>bslib</code> y Bootstrap.</p>
 <p>Para ejecutar la aplicación, es necesario tener instalado
-<strong>R</strong> y los paquetes mencionados, así como cualquier
-dependencia adicional detallada en <code>helpers.R</code> u otros
-archivos.</p>
+<strong>R</strong> y los paquetes mencionados.</p>
 </div>
 <div id="instrucciones-de-instalación-y-ejecución" class="section level2">
-<h2>5. Instrucciones de Instalación y Ejecución</h2>
+<h2>Instrucciones de Instalación y Ejecución</h2>
 <p>Existen dos estrategias principales para servir la aplicación:</p>
 <div id="opción-1-utilizar-shinyapps.io" class="section level3">
 <h3>Opción 1: Utilizar shinyapps.io</h3>
@@ -559,7 +583,7 @@ los recursos de soporte de Posit.</p>
 </div>
 </div>
 <div id="uso-de-la-aplicación" class="section level2">
-<h2>6. Uso de la Aplicación</h2>
+<h2>Uso de la Aplicación</h2>
 <p>La aplicación está diseñada para ser intuitiva y fácil de navegar,
 permitiendo a los usuarios explorar el Índice de Digitalización Comunal
 y sus subindicadores para diferentes comunas y regiones de Chile.</p>
@@ -614,7 +638,7 @@ incluyendo la posibilidad de descargar informes en PDF.</li>
 </div>
 </div>
 <div id="consideraciones-adicionales" class="section level2">
-<h2>7. Consideraciones Adicionales</h2>
+<h2>Consideraciones Adicionales</h2>
 <div id="licencias-y-derechos-de-autor" class="section level3">
 <h3>Licencias y Derechos de Autor</h3>
 <p>Los datos utilizados en la aplicación son generados y proporcionados
@@ -627,7 +651,6 @@ utilizar o referenciar la información presentada en la aplicación.</p>
 <p>Para consultas, soporte técnico o sugerencias sobre la aplicación,
 puedes contactar a <strong>Francisca Balbontín Puig</strong>: <a href="mailto:francisca.balbontinpuig@gmail.com">francisca.balbontinpuig@gmail.com</a>
 o <strong>Joshua Kunst Fuentes</strong>: <a href="mailto:jbkunst@gmail.com">jbkunst@gmail.com</a></p>
-</div>
 </div>
 </div>
 

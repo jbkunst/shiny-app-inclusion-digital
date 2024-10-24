@@ -1,24 +1,23 @@
 ---
+title: "Documento Técnico: Aplicación del Índice de Digitalización Comunal"
 output:
-  html_document: default
   word_document: default
+  html_document: 
+    toc: true
 ---
 
-# Documento Técnico: Aplicación del Índice de Digitalización Comunal
 
-## 1. Descripción General
+## Descripción General 
 
 La aplicación presenta el Índice de Digitalización Comunal para las comunas de Chile, desarrollado por **NUDOS** (Núcleo Milenio en Desigualdades y Oportunidades Digitales). Su propósito es visualizar y analizar los niveles de digitalización a nivel comunal y regional, proporcionando una herramienta interactiva para comprender las desigualdades y oportunidades digitales en el país.
 
-## 2. Funcionalidades Clave
-
 La aplicación permite la visualización de indicadores de acceso digital, mostrando el Índice de Digitalización y tres subindicadores clave: **Conectividad Hogar**, **Educación Digital** y **Municipio Digital**. Utiliza una interfaz intuitiva basada en tarjetas informativas o "value boxes", que presentan de manera clara los indicadores para cada comuna o región. Los usuarios pueden filtrar y ordenar la información según diversos criterios, incluyendo búsqueda por nombre, ordenamiento, rango de habitantes, índice de desarrollo humano, región y categorías del índice. Además, ofrece la opción de ver subindicadores y detalles adicionales para cada comuna o región.
 
-## 3. Arquitectura de la Aplicación
+## Arquitectura de la Aplicación
 
 Desarrollada en **R** utilizando el framework **Shiny** para aplicaciones web interactivas, la aplicación sigue la arquitectura estándar de Shiny con los archivos `global.R`, `ui.R` y `server.R`. El archivo `global.R` contiene la configuración global, la carga de paquetes y datos, y la definición de variables y funciones auxiliares. El `ui.R` define la interfaz de usuario, mientras que el `server.R` maneja la lógica del servidor, gestionando las interacciones y la reactividad de la aplicación.
 
-## 4. Tecnologías y Dependencias
+## Tecnologías y Dependencias
 
 La aplicación utiliza varios paquetes de R para su funcionamiento. A continuación, se presenta una tabla con los paquetes utilizados, su versión más reciente a la fecha, una breve descripción y el enlace al paquete.
 
@@ -40,9 +39,9 @@ La aplicación utiliza varios paquetes de R para su funcionamiento. A continuaci
 
 Además, se incluyen archivos auxiliares como `R/helpers.R`, que contiene funciones personalizadas, y los archivos `www/custom.css` y `www/custom.js` para hojas de estilo y scripts JavaScript personalizados. La aplicación también utiliza la fuente **Inria Sans** de Google Fonts y tematización personalizada con `bslib` y Bootstrap.
 
-Para ejecutar la aplicación, es necesario tener instalado **R** y los paquetes mencionados, así como cualquier dependencia adicional detallada en `helpers.R` u otros archivos.
+Para ejecutar la aplicación, es necesario tener instalado **R** y los paquetes mencionados.
 
-## 5. Instrucciones de Instalación y Ejecución
+## Instrucciones de Instalación y Ejecución
 
 Existen dos estrategias principales para servir la aplicación:
 
@@ -74,7 +73,7 @@ Pasos para instalar Shiny Server:
 
 Para más detalles, se recomienda consultar la documentación oficial y los recursos de soporte de Posit.
 
-## 6. Uso de la Aplicación
+## Uso de la Aplicación
 
 La aplicación está diseñada para ser intuitiva y fácil de navegar, permitiendo a los usuarios explorar el Índice de Digitalización Comunal y sus subindicadores para diferentes comunas y regiones de Chile.
 
@@ -103,7 +102,7 @@ En el **panel de contenido**, se muestran tarjetas informativas o "value boxes" 
 - **Exploración de Resultados**: Las tarjetas informativas mostrarán las comunas o regiones que cumplen con los criterios seleccionados. Puedes expandir las tarjetas para ver detalles adicionales.
 - **Sección de Metodología**: Accede a información detallada sobre cómo se calculan los índices y subindicadores, incluyendo la posibilidad de descargar informes en PDF.
 
-## 7. Consideraciones Adicionales
+## Consideraciones Adicionales
 
 ### Licencias y Derechos de Autor
 
