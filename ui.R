@@ -14,12 +14,34 @@ bslib::page_navbar(
       tags$link(href = "Favicon_nudos.png", rel = "icon"),
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
-    tags$head(
-      tags$style(HTML("
-
-    "))
-    ),
+    tags$head(tags$style(HTML(""))),
     includeScript("www/custom.js"),
+    title = "Inicio",
+    # https://www.figma.com/design/D1FRd62mmcqNQdAeZ047h7/Propuesta-Indicador?node-id=298-841&t=I5Tv0KbtIN1kn7Ub-0
+    layout_columns(
+      col_widths = c(12, 12),
+      row_heights = c(1, 5),
+      layout_column_wrap(
+        width = 1/5,  # Divide el espacio en 5 columnas iguales
+        value_box(1, 2),
+        value_box(1, 2),
+        value_box(1, 2),
+        value_box(1, 2),
+        value_box(1, 2)
+      ),
+      layout_columns(
+        row_heights = c(6, 6),
+        card(card_header("Distribución territorial Índice de Digitalización")),
+        layout_columns(
+          col_widths = c(12, 12),
+          row_heights = c(1, 1),
+          card(card_header("Índice de Inclusión Digital e Índice de Desdarrollo humano")),
+          card(card_header("Distribución de valores"))
+        )
+      )
+    )
+  ),
+  nav_panel(
     title = "Resultados por comuna",
     tags$h4(("Resultados por Comuna"), style = "margin: 0;padding: 0;"),
     uiOutput("comuna_resultados", inline = TRUE),
