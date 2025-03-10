@@ -240,7 +240,7 @@ function(input, output, session) {
     data_filtrada <- data_filtrada()
 
     layout_columns(
-      col_widths = 4,
+      col_widths = 6,
       fill = FALSE, fillable = FALSE,
       !!!data_filtrada$value_box
       )
@@ -312,7 +312,7 @@ function(input, output, session) {
     data_filtrada_regiones <- data_filtrada_regiones()
 
     layout_columns(
-      col_widths = 4,
+      col_widths = 6,
       fill = FALSE, fillable = FALSE,
       !!!data_filtrada_regiones$value_box
     )
@@ -320,5 +320,12 @@ function(input, output, session) {
   })
 
 
+
+  # keep alive --------------------------------------------------------------
+  keep_alive <- shiny::reactiveTimer(
+    intervalMs = 10000,
+    session = shiny::getDefaultReactiveDomain()
+    )
+  shiny::observe({keep_alive()})
 
 }
