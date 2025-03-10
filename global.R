@@ -8,6 +8,8 @@ library(stringr)
 library(shinyWidgets)
 library(rmarkdown)
 library(markdown)
+library(highcharter)
+library(leaflet)
 
 source("R/helpers.R")
 
@@ -17,7 +19,11 @@ colores <- list(
   gris2 = "#AEAEB2",
   rojo = "#FF3057",
   ahuesado = "#F6F3DF",
-  blanco = "#FFFFFF"
+  blanco = "#FFFFFF",
+
+  naranjo = "#FFB030",
+  verde = "#0CB639",
+  azul = "#4B2597"
 )
 
 app_theme <-  bs_theme(
@@ -44,10 +50,29 @@ app_theme <-  bs_theme(
 
 # bslib::bs_theme_preview(app_theme)
 
+options(
+  # highcharter.lang = newlang_opts,
+  highcharter.theme = hc_theme_smpl(
+    # color = parametros$color,
+    chart = list(style = list(fontFamily = "Inria Sans")),
+    legend = list(
+      layout = "horizontal",
+      align = "left",
+      verticalAlign = "top"
+    ),
+    plotOptions = list(
+      series = list(marker = list(symbol = "circle")),
+      line = list(marker = list(symbol = "circle")),
+      area = list(marker = list(symbol = "circle"))
+    )
+  )
+)
+
 
 # partials ----------------------------------------------------------------
 col <- partial(shiny::column, width = 12)
 
+card <- purrr::partial(bslib::card, full_screen = TRUE)
 
 # data comunas ------------------------------------------------------------
 # data <- read_tsv(
@@ -380,7 +405,7 @@ sidebar_app <- sidebar(
   ),
 
   conditionalPanel(
-    "input.nav === 'Resultados por comuna'",
+    "input.nav !== 'Resultados por región'",
     sliderInput(
       "habitantes",
       label = "Habitantes",
@@ -401,7 +426,15 @@ sidebar_app <- sidebar(
       max = 1,
       value = c(0, 1)
     ),
-    selectizeInput("region", "Región", choices = opts_region, selected = "Metropolitana", multiple = TRUE, options = list(placeholder = "Todas las regiones"))
+    selectizeInput(
+      "region",
+      "Región",
+      choices = opts_region,
+      # selected = "Metropolitana",
+      selected = NULL,
+      multiple = TRUE,
+      options = list(placeholder = "Todas las regiones")
+      )
   ),
   checkboxGroupButtons(
     inputId = "segmento",
