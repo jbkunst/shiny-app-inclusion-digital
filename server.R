@@ -2,36 +2,36 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  # showModal(
-  #   modalDialog(
-  #     fluidRow(
-  #       tags$div(
-  #         class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
-  #         # width = 8, offset = 2, styles = "max-width: 200px;",
-  #         tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
-  #         tags$div(
-  #           class="text-center",
-  #           tags$p("Bienvenido al"),
-  #           tags$h2("Índice de Digitalización Comunal")
-  #           ),
-  #         tags$br(),
-  #         includeMarkdown("data/bienvenida.md"),
-  #
-  #         tags$div(
-  #           class="text-center",
-  #           tags$button(
-  #             type = "button", class = "btn btn-danger",
-  #             style = "width: 300px",
-  #             `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
-  #             "Ver resultados"
-  #           )
-  #         )
-  #       )
-  #     ),
-  #     easyClose = FALSE,
-  #     footer = NULL
-  #   )
-  # )
+  showModal(
+    modalDialog(
+      fluidRow(
+        tags$div(
+          class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
+          # width = 8, offset = 2, styles = "max-width: 200px;",
+          tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
+          tags$div(
+            class="text-center",
+            tags$p("Bienvenido al"),
+            tags$h2("Índice de Digitalización Comunal")
+            ),
+          tags$br(),
+          includeMarkdown("data/bienvenida.md"),
+  
+          tags$div(
+            class="text-center",
+            tags$button(
+              type = "button", class = "btn btn-danger",
+              style = "width: 300px",
+              `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
+              "Ver resultados"
+            )
+          )
+        )
+      ),
+      easyClose = FALSE,
+      footer = NULL
+    )
+  )
 
   # observer de seccion -----------------------------------------------------
   observe({
@@ -55,7 +55,6 @@ function(input, output, session) {
 
   }) |>
     bindEvent(input$nav)
-
 
   # dashboard ---------------------------------------------------------------
   output$dash_map <- renderLeaflet({
@@ -141,7 +140,7 @@ function(input, output, session) {
     data <- data_filtrada()
 
     d <- data |>
-      select(comuna, indice_de_desarrollo_humano, indice_de_inclusion_digital = v, v_cat) |>
+      select(codigo_comuna, comuna, indice_de_desarrollo_humano, indice_de_inclusion_digital = v, v_cat) |>
       mutate(
         v_cat = str_to_title(v_cat),
         v_cat = factor(v_cat, levels = c("Bajo", "Medio Bajo", "Medio Alto", "Alto"))
@@ -158,7 +157,15 @@ function(input, output, session) {
       hc_colors(cols) |>
       hc_tooltip(
         pointFormat =  "<b>{point.comuna}</b><br/>Índice de inclusion digital: <b>{point.v_cat} {point.x}</b><br/>Índice de desarrollo humano: <b>{point.y}</b>"
+      ) |> 
+      hc_plotOptions(
+        series = list(
+          cursor = "pointer",
+          point = list(events = list(click = JS("function(){ Shiny.onInputChange('dash_scatter_point_click', {'cat': this.codigo_comuna, '.nonce': Math.random()}) }")))
+          # point = list(events = list(click = JS("function(){ console.log(this.codigo_comuna) }")))
+        )
       )
+      
 
   })
 
@@ -174,6 +181,100 @@ function(input, output, session) {
       hc_colors(as.character(colores[c('rojo', 'naranjo', 'verde', 'azul')]))
 
   })
+
+
+  comuna_reactive <- reactiveVal(NULL)
+
+  observeEvent(input$dash_map_shape_click, {
+    cli::cli_inform("dash_map_shape_click: {input$dash_map_shape_click$id}")
+    comuna_reactive(input$dash_map_shape_click$id)
+  })
+  observeEvent(input$dash_scatter_point_click, {
+    cli::cli_inform("dash_scatter_point_click: {input$dash_scatter_point_click$cat}")
+    comuna_reactive(input$dash_scatter_point_click$cat)
+  })
+  # Modal
+  observeEvent(comuna_reactive(), {
+
+    com <- comuna_reactive()
+    # com <- "09104"
+    # vb <- data |> 
+    #   filter(codigo_comuna == com) |> 
+    #   pull(value_box)
+
+    value_boxes <- data |>
+      filter(codigo_comuna == com) |>
+      select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
+      purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge){
+  
+        cli::cli_inform(comuna)
+  
+        # comuna <- "Copiapó"
+        # region <- "Atacama"
+        # codigo_comuna <- "03101"
+        # v <- v1 <- v2 <- v3 <- v_gauge <- v1_gauge <- v2_gauge <- v3_gauge <- 0.432
+        # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+  
+        lc1 <- layout_columns(
+          col_widths = c(6, 6, 12),
+          # fill = FALSE, fillable = FALSE,
+          col(
+            style="height: 100%;position: relative",
+            tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
+          ),
+          col(
+            style = "text-align: right",
+            tags$small(coalesce(v_cat, "-")),
+            tags$h1(formatear_numero(v))
+          ),
+          col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
+        )
+  
+        lc2 <- layout_columns(
+          col_widths = c(6, 6, 12, 12),
+          # fill = FALSE, fillable = FALSE,
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
+          col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
+          col(horizontal_gauge_html(percent = v1_gauge, height = 10)),
+          tags$br(),
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
+          col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
+          col(horizontal_gauge_html(percent = v3_gauge, height = 10)),
+          tags$br(),
+          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
+          col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
+          col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
+          # tags$br()
+        )
+  
+        c <- card(
+          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
+          # tags$small(region),
+          tags$h2(tags$strong(str_to_upper(comuna))),
+          tags$h5(region),
+          lc1,
+          lc2
+          # tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
+          # tags$button(
+          #   "Ver subindicadores",
+          #   onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
+          #   class = "btn btn-primary btn-md",
+          #   style = "max-width:200px"
+          # ),
+        )
+  
+        # lc2 |> as.character() |> cat()
+        # c |> as.character() |> cat()
+        # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
+  
+        c
+  
+    })
+
+    showModal(modalDialog(value_boxes[[1]], size = "l", footer = NULL, easyClose = TRUE, fade = TRUE))
+
+  })
+  
 
   # comuna ------------------------------------------------------------------
   data_filtrada <- reactive({
@@ -318,8 +419,6 @@ function(input, output, session) {
     )
 
   })
-
-
 
   # keep alive --------------------------------------------------------------
   keep_alive <- shiny::reactiveTimer(
