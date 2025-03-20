@@ -2,36 +2,35 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  showModal(
-    modalDialog(
-      fluidRow(
-        tags$div(
-          class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
-          # width = 8, offset = 2, styles = "max-width: 200px;",
-          tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
-          tags$div(
-            class="text-center",
-            tags$p("Bienvenido al"),
-            tags$h2("Índice de Digitalización Comunal")
-            ),
-          tags$br(),
-          includeMarkdown("data/bienvenida.md"),
-  
-          tags$div(
-            class="text-center",
-            tags$button(
-              type = "button", class = "btn btn-danger",
-              style = "width: 300px",
-              `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
-              "Ver resultados"
-            )
-          )
-        )
-      ),
-      easyClose = FALSE,
-      footer = NULL
-    )
-  )
+  # showModal(
+  #   modalDialog(
+  #     fluidRow(
+  #       tags$div(
+  #         class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
+  #         # width = 8, offset = 2, styles = "max-width: 200px;",
+  #         tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
+  #         tags$div(
+  #           class="text-center",
+  #           tags$p("Bienvenido al"),
+  #           tags$h2("Índice de Digitalización Comunal")
+  #           ),
+  #         tags$br(),
+  #         includeMarkdown("data/bienvenida.md"),
+  #         tags$div(
+  #           class="text-center",
+  #           tags$button(
+  #             type = "button", class = "btn btn-danger",
+  #             style = "width: 300px",
+  #             `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
+  #             "Ver resultados"
+  #           )
+  #         )
+  #       )
+  #     ),
+  #     easyClose = FALSE,
+  #     footer = NULL
+  #   )
+  # )
 
   # observer de seccion -----------------------------------------------------
   observe({
@@ -57,6 +56,34 @@ function(input, output, session) {
     bindEvent(input$nav)
 
   # dashboard ---------------------------------------------------------------
+  output$dash_vb_mean <- renderUI({
+    data <- data_filtrada()
+    v <- mean(data$v, na.rm = TRUE)
+    value_box(
+      title = "Media",
+      value = formatear_numero(v),
+      categorizar_indicador(v)
+    )
+  })
+
+  output$dash_vb_median <- renderUI({
+    data <- data_filtrada()
+    v <- quantile(data$v, 0.5, na.rm = TRUE)
+    value_box(title = "Mediana", value = formatear_numero(v), categorizar_indicador(v))
+  })
+
+  output$dash_vb_min <- renderUI({
+    data <- data_filtrada()
+    v <- min(data$v, na.rm = TRUE)
+    value_box(title = "Mínimo", value = formatear_numero(v), categorizar_indicador(v))
+  })
+
+  output$dash_vb_max <- renderUI({
+    data <- data_filtrada()
+    v <- max(data$v, na.rm = TRUE)
+    value_box(title = "Máximo", value = formatear_numero(v), categorizar_indicador(v))
+  })
+
   output$dash_map <- renderLeaflet({
     # data_filtrada <- data
     d <- data_filtrada()
@@ -181,7 +208,6 @@ function(input, output, session) {
       hc_colors(as.character(colores[c('rojo', 'naranjo', 'verde', 'azul')]))
 
   })
-
 
   comuna_reactive <- reactiveVal(NULL)
 

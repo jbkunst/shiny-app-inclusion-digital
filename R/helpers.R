@@ -26,11 +26,12 @@ horizontal_gauge_html <- function(percent = runif(1), height = 10){
 # card(horizontal_gauge_html())
 
 categorizar_indicador <- function(valor) {
+  # data |> group_by(v_cat) |> summarise(mi = min(v), ma = max(v)) |> arrange(mi) |> View()
   case_when(
-    valor <= 0.25 ~ "MUY BAJO",
-    valor <= 0.50 ~ "BAJO",
-    valor <= 0.75 ~ "ALTO",
-    valor <= 1.00 ~ "MUY ALTO",
+    valor <= 0.457 ~ "BAJO",
+    valor <= 0.510 ~ "MEDIO BAJO",
+    valor <= 0.555 ~ "MEDIO ALTO",
+    TRUE           ~ "ALTO",
   )
 }
 

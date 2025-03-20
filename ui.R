@@ -22,12 +22,11 @@ bslib::page_navbar(
       col_widths = c(12, 12),
       row_heights = c(1, 6),
       layout_column_wrap(
-        width = 1/5,  # Divide el espacio en 5 columnas iguales
-        value_box(1, 2),
-        value_box(1, 2),
-        value_box(1, 2),
-        value_box(1, 2),
-        value_box(1, 2)
+        width = 1/4,  # Divide el espacio en 5 columnas iguales
+        uiOutput("dash_vb_mean"),
+        uiOutput("dash_vb_median"),
+        uiOutput("dash_vb_min"),
+        uiOutput("dash_vb_max"),
       ),
       layout_columns(
         row_heights = c(6, 6),

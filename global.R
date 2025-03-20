@@ -10,6 +10,7 @@ library(rmarkdown)
 library(markdown)
 library(highcharter)
 library(leaflet)
+library(bsicons)
 
 source("R/helpers.R")
 
@@ -73,6 +74,8 @@ options(
 col <- partial(shiny::column, width = 12)
 
 card <- purrr::partial(bslib::card, full_screen = TRUE)
+
+value_box <- purrr::partial(bslib::value_box, theme = value_box_theme(bg = colores$ahuesado, fg = colores$gris))
 
 # data comunas ------------------------------------------------------------
 # data <- read_tsv(
@@ -387,27 +390,29 @@ opts_region <- data |>
 
 sidebar_app <- sidebar(
   id = "mainsidebar",
-  textInput(inputId = "buscar", label = "Buscar"),
-  shinyWidgets::pickerInput(
-    inputId = "orden",
-    label = "Ordenar según",
-    choices = c(
-      "Alfabéticamente",
-      "Alfabéticamente descendente",
-      "Índice digitalización ascendente",
-      "Índice digitalización descendente"
-      ),
-    choicesOpt = list(
-      icon = c(
-        "glyphicon glyphicon-sort-by-alphabet",
-        "glyphicon glyphicon-sort-by-alphabet-alt",
-        "glyphicon glyphicon-sort-by-order",
-        "glyphicon glyphicon-sort-by-order-alt"
-        )
-      ),
-    options = list(`icon-base` = "")
+  conditionalPanel(
+    "input.nav !== 'Dashboard'",
+    textInput(inputId = "buscar", label = "Buscar"),
+    shinyWidgets::pickerInput(
+      inputId = "orden",
+      label = "Ordenar según",
+      choices = c(
+        "Alfabéticamente",
+        "Alfabéticamente descendente",
+        "Índice digitalización ascendente",
+        "Índice digitalización descendente"
+        ),
+      choicesOpt = list(
+        icon = c(
+          "glyphicon glyphicon-sort-by-alphabet",
+          "glyphicon glyphicon-sort-by-alphabet-alt",
+          "glyphicon glyphicon-sort-by-order",
+          "glyphicon glyphicon-sort-by-order-alt"
+          )
+        ),
+      options = list(`icon-base` = "")
+    ),
   ),
-
   conditionalPanel(
     "input.nav !== 'Resultados por región'",
     sliderInput(
