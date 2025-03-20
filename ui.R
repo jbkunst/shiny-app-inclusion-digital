@@ -13,7 +13,7 @@ bslib::page_navbar(
     title = "Dashboard",
     tags$head(
       tags$link(href = "Favicon_nudos.png", rel = "icon"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = str_glue("custom.css?id={round(as.numeric(Sys.time()))}"))
     ),
     tags$head(tags$style(HTML(""))),
     includeScript("www/custom.js"),
@@ -30,14 +30,14 @@ bslib::page_navbar(
       ),
       layout_columns(
         row_heights = c(6, 6),
-        col_widths = c(4, 8),
+        col_widths = c(5, 7),
         card(
           card_header("Distribución territorial Índice de Digitalización"),
           leafletOutput("dash_map", width="100%", height="100%")
           ),
         layout_columns(
           col_widths = c(12, 12),
-          row_heights = c(1, 1),
+          row_heights = c(10, 6),
           card(
             card_header("Índice de Inclusión Digital e Índice de Desdarrollo humano"),
             highchartOutput("dash_scatter")
@@ -50,11 +50,10 @@ bslib::page_navbar(
                 "select_var_dist",
                 label = NULL,
                 choices = c(
-                  "Índice de digitalización",
-                  "Índice de desarrollo humano",
-                  "categoria_sub_indicador_1_acceso",
-                  "valor_sub_indicador_2_politico_11",
-                  "valor_sub_indicador_3_educativo_13"
+                  "Índice de digitalización" = "v",
+                  "Conectividad Hogar" = "v1",
+                  "Educación Digital" = "v2",
+                  "Municipio Digital" = "v3"
                   )
                 )
               ),

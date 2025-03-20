@@ -39,15 +39,15 @@ app_theme <-  bs_theme(
   bg = colores$blanco,
   fg = colores$gris,
   "navbar-dark-active-color" = colores$ahuesado,
-  "modal-md" = "100%"
-) |>
-  bs_add_rules(
-    # list(
-      sass::sass_file("www/custom.css")
-      # sass::sass_file("custom.scss"),
-      # "body { background-color: $body-bg; }"
-    # )
-  )
+  # "modal-md" = "100%"
+)
+  # bs_add_rules(
+  #   # list(
+  #     sass::sass_file("www/custom.css")
+  #     # sass::sass_file("custom.scss"),
+  #     # "body { background-color: $body-bg; }"
+  #   # )
+  # )
 
 # bslib::bs_theme_preview(app_theme)
 

@@ -2,35 +2,36 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  # showModal(
-  #   modalDialog(
-  #     fluidRow(
-  #       tags$div(
-  #         class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
-  #         # width = 8, offset = 2, styles = "max-width: 200px;",
-  #         tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
-  #         tags$div(
-  #           class="text-center",
-  #           tags$p("Bienvenido al"),
-  #           tags$h2("Índice de Digitalización Comunal")
-  #           ),
-  #         tags$br(),
-  #         includeMarkdown("data/bienvenida.md"),
-  #         tags$div(
-  #           class="text-center",
-  #           tags$button(
-  #             type = "button", class = "btn btn-danger",
-  #             style = "width: 300px",
-  #             `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
-  #             "Ver resultados"
-  #           )
-  #         )
-  #       )
-  #     ),
-  #     easyClose = FALSE,
-  #     footer = NULL
-  #   )
-  # )
+  showModal(
+    modalDialog(
+      fluidRow(
+        tags$div(
+          class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
+          # width = 8, offset = 2, styles = "max-width: 200px;",
+          tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
+          tags$div(
+            class="text-center",
+            tags$p("Bienvenido al"),
+            tags$h2("Índice de Digitalización Comunal")
+            ),
+          tags$br(),
+          includeMarkdown("data/bienvenida.md"),
+          tags$div(
+            class="text-center",
+            tags$button(
+              type = "button", class = "btn btn-danger",
+              style = "width: 300px",
+              `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
+              "Ver resultados"
+            )
+          )
+        )
+      ),
+      size = "xl",
+      easyClose = FALSE,
+      footer = NULL
+    ) |>  tagAppendAttributes(class = "model-main")
+  )
 
   # observer de seccion -----------------------------------------------------
   observe({
@@ -155,6 +156,7 @@ function(input, output, session) {
             "box-shadow"   = "2px 2px rgba(0,0,0,0.15)",
             "font-size"    = "15px",
             "padding"      = "15px",
+            "z-index" = 10000,
             "border-color" = "rgba(0,0,0,0.15)"
           )
         )
@@ -199,13 +201,41 @@ function(input, output, session) {
   output$dash_dist <- renderHighchart({
 
     d <- data_filtrada()
-    d <- d
+    
+    # input <- list(select_var_dist = "v1")
 
-    d |>
-      count(vc = v2_cat) |>
-      mutate(vc = str_to_title(vc)) |>
-      hchart("column", hcaes(vc, n), colorByPoint = TRUE, name = input$select_var_dist) |>
-      hc_colors(as.character(colores[c('rojo', 'naranjo', 'verde', 'azul')]))
+    d$c     <- d[[input$select_var_dist]]
+    d$c_cat <- d[[str_c(input$select_var_dist, "_cat")]]
+
+    d <- d |> 
+      select(codigo_comuna, comuna, c, c_cat) |> 
+      arrange(c) |> 
+      filter(!is.na(c)) |> 
+      mutate(x = row_number()) |> 
+      mutate(
+      c_cat = str_to_title(c_cat),
+      c_cat = factor(c_cat, levels = c("Bajo", "Medio Bajo", "Medio Alto", "Alto"))
+    )
+
+    cols <- colores[c('rojo', 'naranjo', 'verde', 'azul')]
+    cols <- cols[which(levels(d$c_cat)  %in% d$c_cat)]
+    cols <- as.character(cols)
+    
+    hchart(
+      d,
+      type = "column",
+      hcaes(x, c, group = c_cat, name = comuna)
+    ) |>
+      hc_colors(cols) |> 
+      hc_xAxis(visible = FALSE) |> 
+      hc_yAxis(title = list(text = "")) |> 
+      hc_plotOptions(
+        series = list(
+          cursor = "pointer",
+          point = list(events = list(click = JS("function(){ Shiny.onInputChange('dash_scatter_point_click', {'cat': this.codigo_comuna, '.nonce': Math.random()}) }")))
+          # point = list(events = list(click = JS("function(){ console.log(this.codigo_comuna) }")))
+        )
+      )      
 
   })
 
@@ -240,64 +270,41 @@ function(input, output, session) {
         # codigo_comuna <- "03101"
         # v <- v1 <- v2 <- v3 <- v_gauge <- v1_gauge <- v2_gauge <- v3_gauge <- 0.432
         # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
-  
-        lc1 <- layout_columns(
+
+        lc2 <- layout_columns(
+          # col_widths = c(6, 6, 12, 12),
           col_widths = c(6, 6, 12),
           # fill = FALSE, fillable = FALSE,
-          col(
-            style="height: 100%;position: relative",
-            tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
-          ),
-          col(
-            style = "text-align: right",
-            tags$small(coalesce(v_cat, "-")),
-            tags$h1(formatear_numero(v))
-          ),
-          col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
-        )
-  
-        lc2 <- layout_columns(
-          col_widths = c(6, 6, 12, 12),
+          col(style="height: 100%;position: relative", tags$h6(style = "position: absolute;bottom: 0", "Índice Digitalización")),
+          col(style = "text-align: right", tags$small(coalesce(v_cat, "-")), tags$h3(formatear_numero(v))),
+          col(horizontal_gauge_html(percent = v_gauge, height = 5), tags$br()),
           # fill = FALSE, fillable = FALSE,
-          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
-          col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
-          col(horizontal_gauge_html(percent = v1_gauge, height = 10)),
-          tags$br(),
-          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
-          col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
-          col(horizontal_gauge_html(percent = v3_gauge, height = 10)),
-          tags$br(),
-          col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
-          col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
-          col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
+          col(style="height: 100%;position: relative", tags$h6(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
+          col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h3(formatear_numero(v1))),
+          col(horizontal_gauge_html(percent = v1_gauge, height = 5)),
+          # tags$br(),
+          col(style="height: 100%;position: relative", tags$h6(style = "position: absolute;bottom: 0", "Educación Digital")),
+          col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h3(formatear_numero(v3))),
+          col(horizontal_gauge_html(percent = v3_gauge, height = 5)),
+          # tags$br(),
+          col(style="height: 100%;position: relative", tags$h6(style = "position: absolute;bottom: 0", "Municipio Digital")),
+          col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h3(formatear_numero(v2))),
+          col(horizontal_gauge_html(percent = v2_gauge, height = 5)),
           # tags$br()
         )
   
-        c <- card(
-          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
-          # tags$small(region),
-          tags$h2(tags$strong(str_to_upper(comuna))),
-          tags$h5(region),
-          lc1,
+        c <- layout_columns(
+          col_widths = 12,
+          style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}; border: 0px"),
+          tags$h3(tags$strong(str_to_upper(comuna)), tags$small(region)),
           lc2
-          # tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
-          # tags$button(
-          #   "Ver subindicadores",
-          #   onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
-          #   class = "btn btn-primary btn-md",
-          #   style = "max-width:200px"
-          # ),
         )
-  
-        # lc2 |> as.character() |> cat()
-        # c |> as.character() |> cat()
-        # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
-  
+        
         c
   
     })
 
-    showModal(modalDialog(value_boxes[[1]], size = "l", footer = NULL, easyClose = TRUE, fade = TRUE))
+    showModal(modalDialog(value_boxes[[1]], size = "m", footer = NULL, easyClose = TRUE, fade = TRUE))
 
   })
   
