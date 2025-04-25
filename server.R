@@ -321,26 +321,28 @@ function(input, output, session) {
       ) |> 
       hc_plotOptions(
       packedbubble = list(
-        maxSize = "150%",
+        maxSize = "100%",
         zMin = 0,
         layoutAlgorithm = list(
-          gravitationalConstant = 0.05,
+          maxSpeed = 2,
+          friction = -0.9,
           splitSeries = TRUE, # TRUE to group points
           seriesInteraction = TRUE,
           dragBetweenSeries = TRUE,
-          parentNodeLimit = TRUE
+          parentNodeLimit = TRUE,
+          a = 3
         ),
         dataLabels = list(
           enabled = TRUE,
           format = "{point.name}",
-          parentNodeFormat = '{point.series.name}',
+          parentNodeFormat = '<span style=\"color: gray; font-size:1.75em;\">{point.series.name}</span>',
           # filter = list(
           #   property = "y",
           #   operator = ">",
           #   value = q95
           # ),
           style = list(
-            # color = "black",
+            color = "white",
             textOutline = "none",
             fontWeight = "normal"
           )
