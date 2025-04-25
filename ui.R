@@ -10,7 +10,8 @@ bslib::page_navbar(
   sidebar = sidebar_app,
   nav_spacer(),
   nav_panel(
-    title = "Dashboard",
+    title = "Resultados generales",
+    useBusyIndicators(),
     tags$head(
       tags$link(href = "Favicon_nudos.png", rel = "icon"),
       tags$link(rel = "stylesheet", type = "text/css", href = str_glue("custom.css?id={round(as.numeric(Sys.time()))}"))
@@ -19,10 +20,11 @@ bslib::page_navbar(
     includeScript("www/custom.js"),
     # https://www.figma.com/design/D1FRd62mmcqNQdAeZ047h7/Propuesta-Indicador?node-id=298-841&t=I5Tv0KbtIN1kn7Ub-0
     layout_columns(
+      fill = FALSE,
       col_widths = c(12, 12),
-      row_heights = c(1, 6),
-      layout_column_wrap(
-        width = 1/4,  # Divide el espacio en 5 columnas iguales
+      # row_heights = c(1, 6),
+      layout_columns(
+        col_widths = 3,  # Divide el espacio en 5 columnas iguales
         uiOutput("dash_vb_mean"),
         uiOutput("dash_vb_median"),
         uiOutput("dash_vb_min"),
@@ -32,14 +34,27 @@ bslib::page_navbar(
         row_heights = c(6, 6),
         col_widths = c(5, 7),
         card(
-          card_header("Distribución territorial Índice de Digitalización"),
+          card_header(
+            class = "d-flex justify-content-between align-items-center",
+            tags$span("Distribución territorial"),
+            selectInput(
+              "select_var_map",
+              label = NULL,
+              choices = c(
+                "Índice de digitalización" = "v",
+                "Conectividad Hogar" = "v1",
+                "Educación Digital" = "v3",
+                "Municipio Digital" = "v2"
+                )
+              )
+            ),
           leafletOutput("dash_map", width="100%", height="100%")
           ),
         layout_columns(
           col_widths = c(12, 12),
-          row_heights = c(10, 6),
+          row_heights = c(4, 2, 2),
           card(
-            card_header("Índice de Inclusión Digital e Índice de Desdarrollo humano"),
+            card_header("Índice de Inclusión Digital e Índice de Desarrollo Humano"),
             highchartOutput("dash_scatter")
             ),
           card(
@@ -52,13 +67,17 @@ bslib::page_navbar(
                 choices = c(
                   "Índice de digitalización" = "v",
                   "Conectividad Hogar" = "v1",
-                  "Educación Digital" = "v2",
-                  "Municipio Digital" = "v3"
+                  "Educación Digital" = "v3",
+                  "Municipio Digital" = "v2"
                   )
                 )
               ),
             highchartOutput("dash_dist")
-            )
+            ),
+          card(
+            card_header("Población por Índice de Inclusión Digital"),
+            highchartOutput("dash_pob_index")
+          ),
         )
       )
     )
@@ -106,4 +125,5 @@ bslib::page_navbar(
         )
       )
     ),
+  nav_item(tags$a("Nudos.cl", href = "https://nudos.cl", target = "_blank"))
   )

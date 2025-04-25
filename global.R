@@ -51,24 +51,50 @@ app_theme <-  bs_theme(
 
 # bslib::bs_theme_preview(app_theme)
 
-options(
-  # highcharter.lang = newlang_opts,
-  highcharter.theme = hc_theme_smpl(
-    # color = parametros$color,
-    chart = list(style = list(fontFamily = "Inria Sans")),
-    legend = list(
-      layout = "horizontal",
-      align = "left",
-      verticalAlign = "top"
+hc_chart_opts <- getOption("highcharter.chart")
+hc_chart_opts$exporting <- list(
+  enabled = TRUE,
+  buttons = list(
+    contextButton = list(
+      menuItems = c("downloadJPEG", "downloadSVG")
+      )
     ),
-    plotOptions = list(
-      series = list(marker = list(symbol = "circle")),
-      line = list(marker = list(symbol = "circle")),
-      area = list(marker = list(symbol = "circle"))
-    )
+  chartOptions = list(
+    chart = list(style = list(fontFamily = "Arial")),
+    backgorund = list(image = list(src = "https://instagram.fscl9-2.fna.fbcdn.net/v/t39.30808-6/471153395_122186486114085906_3869166217667951562_n.jpg?stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMDgweDEwODAuc2RyLmYzMDgwOC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fscl9-2.fna.fbcdn.net&_nc_cat=106&_nc_oc=Q6cZ2QEwcthoVVuNKgZLxDL6AWz955tIFr-wMg81YD72Zrn643k1bkwo8Tg7Z-p7QYstiCc&_nc_ohc=a6gnGUpt9gAQ7kNvgEpzd-v&_nc_gid=KKronkaDW21NGIpPjnmGTQ&edm=ALQROFkAAAAA&ccb=7-5&ig_cache_key=MzMzMTY2OTgyNTM1NDM1Njk3Ng%3D%3D.3-ccb7-5&oh=00_AYGOdUrSTBjSCQtx5S9TqJwInSPirc3_iO1xxXqKwnNG2g&oe=67E236C9&_nc_sid=fc8dfb"))
+  )
+)
+hc_chart_opts$credits  <- list(enabled = TRUE, text = "nudos.cl", href = "http://nudos.cl/")
+
+hc_chart_lang <- getOption("highcharter.lang")
+hc_chart_lang$downloadJPEG <- "Descargar JPEG"
+hc_chart_lang$downloadSVG  <- "Descargar SVG"
+hc_chart_lang$thousandsSep <- "."
+hc_chart_lang$decimalPoint <- ","
+
+hc_chart_theme <-  hc_theme_smpl(
+  # color = parametros$color,
+  chart = list(style = list(fontFamily = "Inria Sans")),
+  legend = list(
+    layout = "horizontal",
+    align = "left",
+    verticalAlign = "top"
+  ),
+  plotOptions = list(
+    series = list(marker = list(symbol = "circle")),
+    line = list(marker = list(symbol = "circle")),
+    area = list(marker = list(symbol = "circle"))
   )
 )
 
+options(
+  highcharter.chart = hc_chart_opts,
+  highcharter.lang = hc_chart_lang,
+  highcharter.theme = hc_chart_theme
+)
+
+# highcharter::highcharts_demo()
+# hchart(AirPassengers)
 
 # partials ----------------------------------------------------------------
 col <- partial(shiny::column, width = 12)
@@ -119,15 +145,12 @@ data <- data |>
 
 # glimpse(data)
 
-
-
 # fix para obtener valores en regiones semaforo ---------------------------
 data |>
   group_by(v_cat) |>
   summarise(
     n(), min(v), max(v)
   )
-
 
 d1 <- data |>
   filter(is.na(v_cat))
@@ -391,7 +414,7 @@ opts_region <- data |>
 sidebar_app <- sidebar(
   id = "mainsidebar",
   conditionalPanel(
-    "input.nav !== 'Dashboard'",
+    "input.nav !== 'Resultados generales'",
     textInput(inputId = "buscar", label = "Buscar"),
     shinyWidgets::pickerInput(
       inputId = "orden",
@@ -435,22 +458,23 @@ sidebar_app <- sidebar(
       max = 1,
       value = c(0, 1)
     ),
-    selectizeInput(
+    selectInput(
       "region",
       "Región",
       choices = opts_region,
       # selected = "Metropolitana",
       selected = NULL,
       multiple = TRUE,
-      options = list(placeholder = "Todas las regiones")
+      # options = list(placeholder = "Todas las regiones")
       )
   ),
-  checkboxGroupButtons(
+  # checkboxGroupButtons(
+  checkboxGroupInput(
     inputId = "segmento",
     label = "Segmento índice de inclusión digital",
-    size = "sm",
-    individual = TRUE,
-    justified = FALSE,
+    # size = "sm",
+    # individual = FALSE,
+    # justified = FALSE,
     # status = "primary",
     choices = c("Alto", "Medio Alto", "Medio Bajo", "Bajo"),
     # checkIcon = list(
@@ -458,6 +482,8 @@ sidebar_app <- sidebar(
     #   no = tags$i(class = "fa fa-square-o", style = "color: steelblue")
     #   )
     ),
-  shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger")
+
+  shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger"),
+  shiny::actionButton("reset", "Resetear filtros", class = "btn btn-primary btn-sm", width = "50%", style = "font-size: 70%")
 )
 
