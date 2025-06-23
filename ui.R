@@ -24,6 +24,7 @@ bslib::page_navbar(
       col_widths = c(12, 12),
       # row_heights = c(1, 6),
       layout_columns(
+        height = 100,
         col_widths = 3,  # Divide el espacio en 5 columnas iguales
         uiOutput("dash_vb_mean"),
         uiOutput("dash_vb_median"),
