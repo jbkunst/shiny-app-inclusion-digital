@@ -2,36 +2,44 @@
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
-  # showModal(
-  #   modalDialog(
-  #     fluidRow(
-  #       tags$div(
-  #         class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
-  #         # width = 8, offset = 2, styles = "max-width: 200px;",
-  #         tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
-  #         tags$div(
-  #           class="text-center",
-  #           tags$p("Bienvenido al"),
-  #           tags$h2("Índice de Digitalización Comunal")
-  #           ),
-  #         tags$br(),
-  #         includeMarkdown("data/bienvenida.md"),
-  #         tags$div(
-  #           class="text-center",
-  #           tags$button(
-  #             type = "button", class = "btn btn-danger",
-  #             style = "width: 300px",
-  #             `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
-  #             "Ver resultados"
-  #           )
-  #         )
-  #       )
-  #     ),
-  #     size = "xl",
-  #     easyClose = FALSE,
-  #     footer = NULL
-  #   ) |>  tagAppendAttributes(class = "model-main")
-  # )
+  showModal(
+    modalDialog(
+      fluidRow(
+        tags$div(
+          # class = "col-sm-10 offset-sm-1 col-md-8 offset-md-2",
+          # width = 8, offset = 2, styles = "max-width: 200px;",
+          tags$img(src = "2305_LogoNudos_Pos.png", width="320px", class="rounded mx-auto d-block"),
+          tags$div(
+            class="text-center",
+            tags$p("Bienvenido al"),
+            tags$h2("Índice de Digitalización Comunal")
+            ),
+          includeMarkdown("data/bienvenida.md"),
+          tags$div(
+            class="text-center",
+            tags$button(
+              type = "button", class = "btn btn-danger",
+              style = "width: 300px", `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
+              "Ver resultados"
+            ),
+            tags$br(),
+            tags$br(),
+            tags$a(
+              href="Informe_Índice Digitalización_2024.pdf",
+              "Descargar documento",
+              download=NA,
+              style = "width: 300px",
+              target="_blank",
+              class = "btn btn-danger"
+            )
+          )
+        )
+      ),
+      size = "xl",
+      easyClose = TRUE,
+      footer = NULL
+    ) #  |>  tagAppendAttributes(class = "model-main")
+  )
 
   # observer de seccion -----------------------------------------------------
   observe({
@@ -114,10 +122,10 @@ function(input, output, session) {
   output$dash_map <- renderLeaflet({
     # data_filtrada <- data
     d <- data_filtrada()
-    
+
     d$c     <- d[[input$select_var_map]]
     d$c_cat <- d[[str_c(input$select_var_map, "_cat")]]
-    
+
     d <- d |>
       select(codigo_comuna, c, c_cat) |>
       mutate(c_cat = str_to_title(c_cat))
@@ -141,7 +149,7 @@ function(input, output, session) {
       na.color = "#ccc")
 
     lb <- data_geo |>
-      str_glue_data("{comuna}<br>{c} ({c_cat})") |> 
+      str_glue_data("{comuna}<br>{c} ({c_cat})") |>
       str_replace("NA \\(NA\\)", "Sin dato") |>
       map(htmltools::HTML)
 
@@ -258,7 +266,7 @@ function(input, output, session) {
   })
 
   output$dash_pob_index <- renderHighchart({
-    
+
     d <- data_filtrada()
 
     # d <- d |> filter(v_cat %in% c("BAJO", "ALTO"))
@@ -299,8 +307,8 @@ function(input, output, session) {
     d <- d |>
       left_join(dfcols, by = join_by(v_cat))
 
-    cols_s <- d |> 
-      distinct(v_cat, color) |> 
+    cols_s <- d |>
+      distinct(v_cat, color) |>
       pull(color)
 
     xcat <- levels(d$v_cat)[which(levels(d$v_cat) %in% (d$v_cat |> as.character() |> unique()))]
@@ -313,12 +321,12 @@ function(input, output, session) {
       hcaes(name = region, value = n, group = v_cat, color = color),
       opacity = 10
     ) |>
-      hc_colors(hex_to_rgba(cols, alpha = 0.4)) |> 
-      # hc_colors("white") |> 
+      hc_colors(hex_to_rgba(cols, alpha = 0.4)) |>
+      # hc_colors("white") |>
       hc_tooltip(
         useHTML = TRUE,
         pointFormat = "<b>{point.name}:</b> {point.value}"
-      ) |> 
+      ) |>
       hc_plotOptions(
       packedbubble = list(
         maxSize = "100%",
@@ -349,7 +357,7 @@ function(input, output, session) {
         )
       )
     )
-    
+
     # hchart(
     #   d,
     #   type = "column",
@@ -366,8 +374,8 @@ function(input, output, session) {
     #       enabled = TRUE,
     #       fomatter = JS("function(){ return Highcharts.numberFormat(this.total, 0, '.', ',');}")
     #     )
-    #   ) |> 
-    #   hc_tooltip(shared = TRUE, sort = TRUE) |> 
+    #   ) |>
+    #   hc_tooltip(shared = TRUE, sort = TRUE) |>
     #   hc_plotOptions(
     #     series = list(states = list(inactive = list(opacity = 1)))
     #  )
@@ -529,6 +537,7 @@ function(input, output, session) {
     cli::cli_inform("reactive `data_filtrada_regiones`")
 
     str(reactiveValuesToList(input)) |> print()
+
     data_filtrada_regiones <- data_regiones
 
     if(input$buscar != ""){
@@ -542,16 +551,22 @@ function(input, output, session) {
     # }
 
     # checkboxgroup
-    inds <- c()
-    if(input$segmento1) inds <- c(inds, "ALTO")
-    if(input$segmento2) inds <- c(inds, "MEDIO ALTO")
-    if(input$segmento3) inds <- c(inds, "MEDIO BAJO")
-    if(input$segmento4) inds <- c(inds, "BAJO")
-
-    if(!is.null(inds)){
+    if(!is.null(input$segmento)){
       data_filtrada_regiones <- data_filtrada_regiones |>
-        filter(v_cat %in% inds)
+        filter(v_cat %in% str_to_upper(input$segmento))
     }
+
+    # checkboxgroup
+    # inds <- c()
+    # if(input$segmento1) inds <- c(inds, "ALTO")
+    # if(input$segmento2) inds <- c(inds, "MEDIO ALTO")
+    # if(input$segmento3) inds <- c(inds, "MEDIO BAJO")
+    # if(input$segmento4) inds <- c(inds, "BAJO")
+    #
+    # if(!is.null(inds)){
+    #   data_filtrada_regiones <- data_filtrada_regiones |>
+    #     filter(v_cat %in% inds)
+    # }
 
     # data_filtrada_regiones <- data_filtrada_regiones |>
     #   filter(input$habitantes[1]        <= habitantes                 , habitantes                  <= input$habitantes[2]       ) |>

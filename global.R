@@ -113,7 +113,7 @@ value_box <- purrr::partial(bslib::value_box, theme = value_box_theme(bg = color
 data <- read_tsv(
   "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv",
   locale = locale(decimal_mark = ","),
-  show_col_types = FALSE
+  show_col_types = FALSE,
 )
 
 # glimpse(data)
@@ -483,7 +483,11 @@ sidebar_app <- sidebar(
     #   )
     ),
 
-  shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger"),
-  shiny::actionButton("reset", "Resetear filtros", class = "btn btn-primary btn-sm", width = "50%", style = "font-size: 70%")
+  shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger", style = "margin-bottom:-15px;"),
+  div(
+    style = "text-align: center; line-height: 1.2;",
+    tags$span("Los filtros se mantienen activos al cambiar de pestaña.", style = "font-size: 70%;")
+  ),
+  shiny::actionButton("reset", "Deshacer filtros", class = "btn btn-primary btn-sm", width = "100%", style = "font-size: 70%")
 )
 

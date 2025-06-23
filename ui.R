@@ -19,6 +19,11 @@ bslib::page_navbar(
     tags$head(tags$style(HTML(""))),
     includeScript("www/custom.js"),
     # https://www.figma.com/design/D1FRd62mmcqNQdAeZ047h7/Propuesta-Indicador?node-id=298-841&t=I5Tv0KbtIN1kn7Ub-0
+    tags$h6(
+      style = "margin-bottom: -15px;",
+      tags$b("Valores estadísticos"),
+      tags$small("(se modifican según la selección de filtros)")
+    ),
     layout_columns(
       fill = FALSE,
       col_widths = c(12, 12),
@@ -30,6 +35,11 @@ bslib::page_navbar(
         uiOutput("dash_vb_median"),
         uiOutput("dash_vb_min"),
         uiOutput("dash_vb_max"),
+      ),
+      tags$h6(
+        style = "margin-bottom: -15px; margin-top:10px",
+        tags$b("Gráficos estadísticos"),
+        tags$small("(se modifican según la selección de filtros)")
       ),
       layout_columns(
         row_heights = c(6, 6),
