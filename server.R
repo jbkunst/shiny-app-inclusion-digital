@@ -1,4 +1,4 @@
-# input <- list(habitantes = c(0, 1e10), indice_desarrollo = c(0, 1), buscar = "maipo")
+# input <- list(habitantes = c(0, 1e10), indice_desarrollo = c(0, 1), buscar = "maipo", orden = "Índice digitalización descendente")
 function(input, output, session) {
 
   # modal bienvenida --------------------------------------------------------
@@ -269,7 +269,7 @@ function(input, output, session) {
 
     d <- data_filtrada()
 
-    # d <- d |> filter(v_cat %in% c("BAJO", "ALTO"))
+    # d <- data; d <- d |> filter(v_cat %in% c("BAJO", "ALTO"))
 
     d <- d |>
       mutate(
@@ -319,19 +319,22 @@ function(input, output, session) {
       d,
       type = "packedbubble",
       hcaes(name = region, value = n, group = v_cat, color = color),
-      opacity = 10
+      opacity = 10,
+      shadow = FALSE 
     ) |>
-      hc_colors(hex_to_rgba(cols, alpha = 0.4)) |>
+      hc_colors(hex_to_rgba(cols_s, alpha = 0.4)) |>
       # hc_colors("white") |>
       hc_tooltip(
         useHTML = TRUE,
         pointFormat = "<b>{point.name}:</b> {point.value}"
       ) |>
+      # hc_chart(animation = list(enabled = FALSE) |> 
       hc_plotOptions(
       packedbubble = list(
         maxSize = "100%",
         zMin = 0,
         layoutAlgorithm = list(
+          # maxIterations = 200,
           maxSpeed = 2,
           friction = -0.9,
           splitSeries = TRUE, # TRUE to group points
@@ -344,11 +347,11 @@ function(input, output, session) {
           enabled = TRUE,
           format = "{point.name}",
           parentNodeFormat = '<span style=\"color: gray; font-size:1.75em;\">{point.series.name}</span>',
-          # filter = list(
-          #   property = "y",
-          #   operator = ">",
-          #   value = q95
-          # ),
+          filter = list(
+            property = "y",
+            operator = ">",
+            value = q95
+          ),
           style = list(
             color = "white",
             textOutline = "none",
@@ -357,28 +360,6 @@ function(input, output, session) {
         )
       )
     )
-
-    # hchart(
-    #   d,
-    #   type = "column",
-    #   hcaes(v_cat, n, group = region, color = color),
-    #   stacking = "normal",
-    #   borderWidth = 0,
-    #   showInLegend = FALSE
-    # ) |>
-    #   hc_colors("gray") |>
-    #   hc_xAxis(categories = xcat, title = list(text = "")) |>
-    #   hc_yAxis(
-    #     title = list(text = "Población"),
-    #     stackLabels = list(
-    #       enabled = TRUE,
-    #       fomatter = JS("function(){ return Highcharts.numberFormat(this.total, 0, '.', ',');}")
-    #     )
-    #   ) |>
-    #   hc_tooltip(shared = TRUE, sort = TRUE) |>
-    #   hc_plotOptions(
-    #     series = list(states = list(inactive = list(opacity = 1)))
-    #  )
 
   })
 
