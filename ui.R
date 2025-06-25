@@ -17,8 +17,10 @@ bslib::page_navbar(
       tags$link(rel = "stylesheet", type = "text/css", href = str_glue("custom.css?id={round(as.numeric(Sys.time()))}"))
     ),
     tags$head(tags$style(HTML(""))),
+    tags$head(tags$script(HTML("setInterval(function(){Shiny.setInputValue('keepAlive', new Date());},20000);"))),
     includeScript("www/custom.js"),
     # https://www.figma.com/design/D1FRd62mmcqNQdAeZ047h7/Propuesta-Indicador?node-id=298-841&t=I5Tv0KbtIN1kn7Ub-0
+    tags$h4(("Resultados Generales"), style = "margin: 0;padding: 0;"),
     tags$h6(
       style = "margin-bottom: -15px;",
       tags$b("Valores estadísticos"),
@@ -127,7 +129,7 @@ bslib::page_navbar(
           width = 4,
           tags$a(
             href="Informe_Índice Digitalización_2024.pdf",
-            "Descargar documento",
+            "Descargar Reporte",
             download=NA,
             target="_blank",
             class = "btn btn-danger"

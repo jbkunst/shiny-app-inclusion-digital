@@ -26,7 +26,7 @@ function(input, output, session) {
             tags$br(),
             tags$a(
               href="Informe_Índice Digitalización_2024.pdf",
-              "Descargar documento",
+              "Descargar Reporte",
               download=NA,
               style = "width: 300px",
               target="_blank",
@@ -611,10 +611,6 @@ function(input, output, session) {
   })
 
   # keep alive --------------------------------------------------------------
-  keep_alive <- shiny::reactiveTimer(
-    intervalMs = 10000,
-    session = shiny::getDefaultReactiveDomain()
-    )
-  shiny::observe({keep_alive()})
+  observeEvent(input$keepAlive, { cli::cli_inform("keep alive")})
 
 }
