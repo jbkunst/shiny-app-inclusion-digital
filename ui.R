@@ -113,26 +113,60 @@ bslib::page_navbar(
       class = "p-5",
       width = 8,
       offset = 2,
-      fluidRow(
-        column(
-          class = "p-10",
-          width = 8,
-          tags$h3(tags$strong("LA METODOLOGÍA"))
-        )
-      ),
-      fluidRow(
-        column(
-          width = 8,
-          shiny::includeMarkdown("data/metodologia.md")
-        ),
-        column(
-          width = 4,
-          tags$a(
-            href="Informe_Índice Digitalización_2024.pdf",
-            "Descargar Reporte",
-            download=NA,
-            target="_blank",
-            class = "btn btn-danger"
+
+      tabsetPanel(
+        type = "pills",
+        tags$hr(),
+        tabPanel(
+          title = "2024",
+          fluidRow(
+            column(
+              class = "p-10",
+              width = 8,
+              tags$h3(tags$strong("LA METODOLOGÍA 2024"))
+            )
+          ),
+          fluidRow(
+            column(
+              width = 8,
+              shiny::includeMarkdown("data/metodologia_24.md")
+            ),
+            column(
+              width = 4,
+              tags$a(
+                href="Informe IDC2024.pdf",
+                "Descargar Reporte 2024",
+                download=NA,
+                target="_blank",
+                class = "btn btn-danger"
+                )
+              )
+            )
+          ),
+        tabPanel(
+          title = "2025",
+          fluidRow(
+            column(
+              class = "p-10",
+              width = 8,
+              tags$h3(tags$strong("LA METODOLOGÍA 2025"))
+              )
+            ),
+          fluidRow(
+            column(
+              width = 8,
+              shiny::includeMarkdown("data/metodologia_25.md")
+            ),
+            column(
+              width = 4,
+              tags$a(
+                href="Informe IDC2025.pdf",
+                "Descargar Reporte 2025",
+                download=NA,
+                target="_blank",
+                class = "btn btn-danger"
+                )
+              )
             )
           )
         )

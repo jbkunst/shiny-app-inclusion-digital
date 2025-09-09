@@ -110,101 +110,101 @@ value_box <- purrr::partial(bslib::value_box, theme = value_box_theme(bg = color
 #   )
 # write_tsv(data, "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv")
 
-data <- read_tsv(
-  "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv",
-  locale = locale(decimal_mark = ","),
-  show_col_types = FALSE,
-)
-
-# glimpse(data)
-
-data <- janitor::clean_names(data)
-
-data <- data |>
-  rename(
-    v = valor_indice_de_inclusion_digital_7,
-    v_cat = categoria_indice_de_inclusion_digital,
-    v1 = valor_sub_indicador_1_acceso_9,
-    v1_cat = categoria_sub_indicador_1_acceso,
-    v2 = valor_sub_indicador_2_politico_11,
-    v2_cat = categoria_sub_indicador_2_politico,
-    v3 = valor_sub_indicador_3_educativo_13,
-    v3_cat = categoria_sub_indicador_3_educativo
-  )
-
-data <- data |>
-  mutate(across(c(v_cat, v1_cat, v2_cat, v3_cat), str_to_upper)) |>
-  mutate(across(c(v,v1, v2, v3), as.numeric)) |>
-  mutate(
-    indice_de_desarrollo_humano = as.numeric(indice_de_desarrollo_humano)
-  )
-
-data <- data |>
-  select(1:14) |>
-  filter(TRUE)
-
-# glimpse(data)
-
-# fix para obtener valores en regiones semaforo ---------------------------
-data |>
-  group_by(v_cat) |>
-  summarise(
-    n(), min(v), max(v)
-  )
-
-d1 <- data |>
-  filter(is.na(v_cat))
-
-d2 <- data |>
-  filter(!is.na(v_cat)) |>
-  arrange(v) |>
-  mutate(v_gauge  = ecdf(v)(v)/4, .by = v_cat, .after = v_cat) |>
-  mutate(
-    v_gauge = v_gauge +
-      case_when(
-        v_cat == "BAJO"       ~ 0,
-        v_cat == "MEDIO BAJO" ~ .25,
-        v_cat == "MEDIO ALTO" ~ .50,
-        v_cat == "ALTO"       ~ .75
-      ),
-  ) |>
-  mutate(v3_gauge  = ecdf(v3)(v3)/4, .by = v3_cat, .after = v3_cat) |>
-  mutate(
-    v3_gauge = v3_gauge +
-      case_when(
-        v3_cat == "BAJO"       ~ 0,
-        v3_cat == "MEDIO BAJO" ~ .25,
-        v3_cat == "MEDIO ALTO" ~ .50,
-        v3_cat == "ALTO"       ~ .75
-      ),
-  )
-
-
-data <- bind_rows(d2, d1)
-
-data <- data |>
-  mutate(v1_gauge  = ecdf(v1)(v1)/4, .by = v1_cat, .after = v1_cat) |>
-  mutate(
-    v1_gauge = v1_gauge +
-      case_when(
-        v1_cat == "BAJO"       ~ 0,
-        v1_cat == "MEDIO BAJO" ~ .25,
-        v1_cat == "MEDIO ALTO" ~ .50,
-        v1_cat == "ALTO"       ~ .75
-      ),
-  ) |>
-  mutate(v2_gauge  = ecdf(v2)(v2)/4, .by = v2_cat, .after = v2_cat) |>
-  mutate(
-    v2_gauge = v2_gauge +
-      case_when(
-        v2_cat == "BAJO"       ~ 0,
-        v2_cat == "MEDIO BAJO" ~ .25,
-        v2_cat == "MEDIO ALTO" ~ .50,
-        v2_cat == "ALTO"       ~ .75
-      ),
-  )
-
-# data <- sample_n(data, 100)
+# data <- read_tsv(
+#   "data/Datos índice de inclusión digital - Índice de inclusión digital.tsv",
+#   locale = locale(decimal_mark = ","),
+#   show_col_types = FALSE,
+# )
+#
+# # glimpse(data)
+#
+# data <- janitor::clean_names(data)
+#
+# data <- data |>
+#   rename(
+#     v = valor_indice_de_inclusion_digital_7,
+#     v_cat = categoria_indice_de_inclusion_digital,
+#     v1 = valor_sub_indicador_1_acceso_9,
+#     v1_cat = categoria_sub_indicador_1_acceso,
+#     v2 = valor_sub_indicador_2_politico_11,
+#     v2_cat = categoria_sub_indicador_2_politico,
+#     v3 = valor_sub_indicador_3_educativo_13,
+#     v3_cat = categoria_sub_indicador_3_educativo
+#   )
+#
+# data <- data |>
+#   mutate(across(c(v_cat, v1_cat, v2_cat, v3_cat), str_to_upper)) |>
+#   mutate(across(c(v,v1, v2, v3), as.numeric)) |>
+#   mutate(
+#     indice_de_desarrollo_humano = as.numeric(indice_de_desarrollo_humano)
+#   )
+#
+# data <- data |>
+#   select(1:14) |>
+#   filter(TRUE)
+#
+# # glimpse(data)
+#
+# # fix para obtener valores en regiones semaforo ---------------------------
+# data |>
+#   group_by(v_cat) |>
+#   summarise(
+#     n(), min(v), max(v)
+#   )
+#
+# d1 <- data |>
+#   filter(is.na(v_cat))
+#
+# d2 <- data |>
+#   filter(!is.na(v_cat)) |>
+#   arrange(v) |>
+#   mutate(v_gauge  = ecdf(v)(v)/4, .by = v_cat, .after = v_cat) |>
+#   mutate(
+#     v_gauge = v_gauge +
+#       case_when(
+#         v_cat == "BAJO"       ~ 0,
+#         v_cat == "MEDIO BAJO" ~ .25,
+#         v_cat == "MEDIO ALTO" ~ .50,
+#         v_cat == "ALTO"       ~ .75
+#       ),
+#   ) |>
+#   mutate(v3_gauge  = ecdf(v3)(v3)/4, .by = v3_cat, .after = v3_cat) |>
+#   mutate(
+#     v3_gauge = v3_gauge +
+#       case_when(
+#         v3_cat == "BAJO"       ~ 0,
+#         v3_cat == "MEDIO BAJO" ~ .25,
+#         v3_cat == "MEDIO ALTO" ~ .50,
+#         v3_cat == "ALTO"       ~ .75
+#       ),
+#   )
+#
+#
+# data <- bind_rows(d2, d1)
+#
+# data <- data |>
+#   mutate(v1_gauge  = ecdf(v1)(v1)/4, .by = v1_cat, .after = v1_cat) |>
+#   mutate(
+#     v1_gauge = v1_gauge +
+#       case_when(
+#         v1_cat == "BAJO"       ~ 0,
+#         v1_cat == "MEDIO BAJO" ~ .25,
+#         v1_cat == "MEDIO ALTO" ~ .50,
+#         v1_cat == "ALTO"       ~ .75
+#       ),
+#   ) |>
+#   mutate(v2_gauge  = ecdf(v2)(v2)/4, .by = v2_cat, .after = v2_cat) |>
+#   mutate(
+#     v2_gauge = v2_gauge +
+#       case_when(
+#         v2_cat == "BAJO"       ~ 0,
+#         v2_cat == "MEDIO BAJO" ~ .25,
+#         v2_cat == "MEDIO ALTO" ~ .50,
+#         v2_cat == "ALTO"       ~ .75
+#       ),
+#   )
+#
+# # data <- sample_n(data, 100)
 
 # generando valueboxes ----------------------------------------------------
 cli::cli_inform("Partiendo value_boxes")
@@ -214,77 +214,16 @@ if(file.exists("data/data.rds")){
   data <- read_rds("data/data.rds")
 } else {
 
-  value_boxes <- data |>
-    select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
-    purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge){
+  data <- read_tsv("data/data_datos_indice_de_inclusion_digital_indice_de_inclusion_digital_2024_2025_v2.tsv")
 
-      cli::cli_inform(comuna)
-
-      # comuna <- "Copiapó"
-      # region <- "Atacama"
-      # codigo_comuna <- "03101"
-      # v <- v1 <- v2 <- v3 <- v_gauge <- v1_gauge <- v2_gauge <- v3_gauge <- 0.432
-      # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
-
-      lc1 <- layout_columns(
-        col_widths = c(6, 6, 12),
-        # fill = FALSE, fillable = FALSE,
-        col(
-          style="height: 100%;position: relative",
-          tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
-        ),
-        col(
-          style = "text-align: right",
-          tags$small(coalesce(v_cat, "-")),
-          tags$h1(formatear_numero(v))
-        ),
-        col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
-      )
-
-      lc2 <- layout_columns(
-        col_widths = c(6, 6, 12, 12),
-        # fill = FALSE, fillable = FALSE,
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
-        col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
-        col(horizontal_gauge_html(percent = v1_gauge, height = 10)),
-        tags$br(),
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
-        col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
-        col(horizontal_gauge_html(percent = v3_gauge, height = 10)),
-        tags$br(),
-        col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
-        col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
-        col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
-        # tags$br()
-      )
-
-      c <- card(
-        style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
-        # tags$small(region),
-        tags$h2(tags$strong(str_to_upper(comuna))),
-        tags$h5(region),
-        lc1,
-        tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
-        tags$button(
-          "Ver subindicadores",
-          onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
-          class = "btn btn-primary btn-md",
-          style = "max-width:200px"
-        ),
-      )
-
-      # lc2 |> as.character() |> cat()
-      # c |> as.character() |> cat()
-      # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
-
-      c
-
-  })
-
-  data <- data |>
-    mutate(value_box = value_boxes)
-
-  rm(value_boxes)
+  # value_boxes <- data |>
+  #   select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
+  #   purrr::pmap(get_vb)
+  #
+  # data <- data |>
+  #   mutate(value_box = value_boxes)
+  #
+  # rm(value_boxes)
 
   saveRDS(data, "data/data.rds")
 
@@ -405,6 +344,10 @@ rm(value_boxes)
 
 cli::cli_inform("Terminando value_boxes regiones")
 
+data_regiones <- bind_rows(
+  data_regiones |> mutate(anio = 2024, .before = 1),
+  data_regiones |> mutate(anio = 2025, .before = 1)
+)
 
 # sidebar -----------------------------------------------------------------
 opts_region <- data |>
@@ -482,6 +425,15 @@ sidebar_app <- sidebar(
     #   no = tags$i(class = "fa fa-square-o", style = "color: steelblue")
     #   )
     ),
+
+  shinyWidgets::radioGroupButtons(
+    inputId = "anio",
+    label = "Año",
+    selected = 2025,
+    choices = c(2024, 2025),
+    justified = TRUE,
+    size = "sm"
+  ),
 
   shiny::actionButton("go", "Aplicar filtros", class = "btn btn-danger", style = "margin-bottom:-15px;"),
   div(

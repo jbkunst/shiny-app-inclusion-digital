@@ -49,3 +49,68 @@ str_clean <- function (x)  {
     janitor::make_clean_names() |>
     str_replace_all("_", " ")
 }
+
+get_vb <- function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge){
+
+  cli::cli_inform(comuna)
+
+  # comuna <- "Copiapó"
+  # region <- "Atacama"
+  # codigo_comuna <- "03101"
+  # v <- v1 <- v2 <- v3 <- v_gauge <- v1_gauge <- v2_gauge <- v3_gauge <- 0.432
+  # v_cat <- v1_cat <- v2_cat <- v3_cat <- "Alto"
+
+  lc1 <- layout_columns(
+    col_widths = c(6, 6, 12),
+    # fill = FALSE, fillable = FALSE,
+    col(
+      style="height: 100%;position: relative",
+      tags$h5(style = "position: absolute;bottom: 0", "Índice Digitalización")
+    ),
+    col(
+      style = "text-align: right",
+      tags$small(coalesce(v_cat, "-")),
+      tags$h1(formatear_numero(v))
+    ),
+    col(horizontal_gauge_html(percent = v_gauge, height = 10), tags$br()),
+  )
+
+  lc2 <- layout_columns(
+    col_widths = c(6, 6, 12, 12),
+    # fill = FALSE, fillable = FALSE,
+    col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Conectividad Hogar")),
+    col(style = "text-align: right",tags$small(coalesce(v1_cat, "-")), tags$h1(formatear_numero(v1))),
+    col(horizontal_gauge_html(percent = v1_gauge, height = 10)),
+    tags$br(),
+    col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Educación Digital")),
+    col(style = "text-align: right",tags$small(coalesce(v3_cat, "-")), tags$h1(formatear_numero(v3))),
+    col(horizontal_gauge_html(percent = v3_gauge, height = 10)),
+    tags$br(),
+    col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
+    col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
+    col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
+    # tags$br()
+  )
+
+  c <- card(
+    style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
+    # tags$small(region),
+    tags$h2(tags$strong(str_to_upper(comuna))),
+    tags$h5(region),
+    lc1,
+    tags$div(id = str_glue("comuna{codigo_comuna}"), class = "collapse", lc2),
+    tags$button(
+      "Ver subindicadores",
+      onclick = str_glue("$('#comuna{codigo_comuna}').collapse('toggle'); this.textContent = this.textContent === 'Ver subindicadores' ? 'Cerrar detalle' : 'Ver subindicadores';"),
+      class = "btn btn-primary btn-md",
+      style = "max-width:200px"
+    ),
+  )
+
+  # lc2 |> as.character() |> cat()
+  # c |> as.character() |> cat()
+  # htmltools::tagQuery(c)$find(".card-body")$removeClass("bslib-gap-spacing")$allTags()
+
+  c
+
+}

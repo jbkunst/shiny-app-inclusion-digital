@@ -22,16 +22,16 @@ function(input, output, session) {
               style = "width: 300px", `data-dismiss` = "modal", `data-bs-dismiss` = "modal",
               "Ver resultados"
             ),
-            tags$br(),
-            tags$br(),
-            tags$a(
-              href="Informe_Índice Digitalización_2024.pdf",
-              "Descargar Reporte",
-              download=NA,
-              style = "width: 300px",
-              target="_blank",
-              class = "btn btn-danger"
-            )
+            # tags$br(),
+            # tags$br(),
+            # tags$a(
+            #   href="Informe_Índice Digitalización_2024.pdf",
+            #   "Descargar Reporte",
+            #   download=NA,
+            #   style = "width: 300px",
+            #   target="_blank",
+            #   class = "btn btn-danger"
+            # )
           )
         )
       ),
@@ -75,6 +75,7 @@ function(input, output, session) {
     shinyWidgets::updatePickerInput(session, "orden", selected = "Alfabéticamente")
     updateSliderInput(session, "habitantes", value = c(100, 700000))
     updateSliderInput(session, "indice_desarrollo", value = c(0, 1))
+    shinyWidgets::updateRadioGroupButtons(session, "anio", selected = 2025)
     # shinyWidgets::updateCheckboxGroupButtons(session, "segmento", selected =  c("Alto", "Medio Alto", "Medio Bajo", "Bajo"))
     updateCheckboxGroupInput(session, "segmento", selected =  list(NULL))
 
@@ -207,7 +208,9 @@ function(input, output, session) {
     cols <- as.character(cols)
 
     hchart(d, "scatter", hcaes(indice_de_inclusion_digital, indice_de_desarrollo_humano, name = comuna, group = v_cat)) |>
-      hc_xAxis(min = .3, max = .7, title = list(text = "Índice de inclusion digital")) |>
+      hc_xAxis(
+        min = .3, max = .7,
+        title = list(text = "Índice de inclusion digital")) |>
       hc_yAxis(min = .2, max = 1., title = list(text = "Índice de desarrollo humano")) |>
       hc_colors(cols) |>
       hc_tooltip(
@@ -320,7 +323,7 @@ function(input, output, session) {
       type = "packedbubble",
       hcaes(name = region, value = n, group = v_cat, color = color),
       opacity = 10,
-      shadow = FALSE 
+      shadow = FALSE
     ) |>
       hc_colors(hex_to_rgba(cols_s, alpha = 0.4)) |>
       # hc_colors("white") |>
@@ -328,7 +331,7 @@ function(input, output, session) {
         useHTML = TRUE,
         pointFormat = "<b>{point.name}:</b> {point.value}"
       ) |>
-      # hc_chart(animation = list(enabled = FALSE) |> 
+      # hc_chart(animation = list(enabled = FALSE) |>
       hc_plotOptions(
       packedbubble = list(
         maxSize = "100%",
@@ -386,6 +389,7 @@ function(input, output, session) {
 
     value_boxes <- data |>
       filter(codigo_comuna == com) |>
+      filter(anio == input$anio) |>
       select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
       purrr::pmap(function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge){
 
@@ -475,6 +479,9 @@ function(input, output, session) {
       filter(input$indice_desarrollo[1] <= indice_de_desarrollo_humano, indice_de_desarrollo_humano <= input$indice_desarrollo[2]) |>
       filter(TRUE)
 
+    # anio
+    data_filtrada <- data_filtrada |> filter(anio == as.numeric(input$anio))
+
     # orden
     if(input$orden == "Alfabéticamente")                   data_filtrada <- data_filtrada |> arrange(comuna)
     if(input$orden == "Alfabéticamente descendente")       data_filtrada <- data_filtrada |> arrange(desc(comuna))
@@ -503,6 +510,13 @@ function(input, output, session) {
 
     # data_filtrada <- data
     data_filtrada <- data_filtrada()
+
+    value_boxes <- data_filtrada |>
+      select(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat, v1_gauge, v2, v2_cat, v2_gauge, v3, v3_cat, v3_gauge) |>
+      purrr::pmap(get_vb)
+
+    data_filtrada <- data_filtrada |>
+      mutate(value_box = value_boxes)
 
     layout_columns(
       col_widths = 6,
@@ -553,6 +567,9 @@ function(input, output, session) {
     #   filter(input$habitantes[1]        <= habitantes                 , habitantes                  <= input$habitantes[2]       ) |>
     #   filter(input$indice_desarrollo[1] <= indice_de_desarrollo_humano, indice_de_desarrollo_humano <= input$indice_desarrollo[2]) |>
     #   filter(TRUE)
+
+    # anio
+    data_filtrada_regiones <- data_filtrada_regiones |> filter(anio == as.numeric(input$anio))
 
     # orden
     if(input$orden == "Alfabéticamente")                   data_filtrada_regiones <- data_filtrada_regiones |> arrange(region)
