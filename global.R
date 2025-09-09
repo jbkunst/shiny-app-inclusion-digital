@@ -11,6 +11,7 @@ library(markdown)
 library(highcharter)
 library(leaflet)
 library(bsicons)
+library(shinycssloaders)
 
 source("R/helpers.R")
 
@@ -314,7 +315,8 @@ value_boxes <- data_regiones |>
     #   horizontal_gauge_html(percent = v3, height = 10)
     # )
 
-    c <- card(
+    c <- bslib::card(
+      full_screen = FALSE,
       style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
       # tags$small(region),
       tags$h2(tags$strong(str_to_upper(region))),

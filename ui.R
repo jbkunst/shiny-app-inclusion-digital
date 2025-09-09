@@ -99,13 +99,13 @@ bslib::page_navbar(
     title = "Resultados por comuna",
     tags$h4(("Resultados por Comuna"), style = "margin: 0;padding: 0;"),
     uiOutput("comuna_resultados", inline = TRUE),
-    uiOutput("comuna_boxes")
+    uiOutput("comuna_boxes") |> shinycssloaders::withSpinner(color = colores$gris)
   ),
   nav_panel(
     title = "Resultados por región",
     tags$h4(("Resultados por Región"), style = "margin: 0;padding: 0;"),
     uiOutput("region_resultados", inline = TRUE),
-    uiOutput("region_boxes")
+    uiOutput("region_boxes") |> shinycssloaders::withSpinner(color = colores$gris)
   ),
   nav_panel(
     title = "Metodología",

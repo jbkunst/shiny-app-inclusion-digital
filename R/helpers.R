@@ -89,10 +89,11 @@ get_vb <- function(comuna, region, codigo_comuna, v, v_cat, v_gauge, v1, v1_cat,
     col(style="height: 100%;position: relative", tags$h5(style = "position: absolute;bottom: 0", "Municipio Digital")),
     col(style = "text-align: right",tags$small(coalesce(v2_cat, "-")), tags$h1(formatear_numero(v2))),
     col(horizontal_gauge_html(percent = v2_gauge, height = 10)),
-    # tags$br()
+    tags$br()
   )
 
-  c <- card(
+  c <- bslib::card(
+    full_screen = FALSE,
     style = str_glue("background-color:{colores$ahuesado}; color: {colores$gris}"),
     # tags$small(region),
     tags$h2(tags$strong(str_to_upper(comuna))),
